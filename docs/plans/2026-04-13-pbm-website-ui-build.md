@@ -2,6 +2,106 @@
 
 > **For Claude:** REQUIRED SUB-SKILL: Use `superpowers:executing-plans` to implement this plan task-by-task. This is a UI-only build — defer all backend wiring (Supabase, forms, data) until the user explicitly approves Phase 12 (functionality).
 
+---
+
+## ⚡ Status (last updated 2026-04-13)
+
+| Phase | State | Notes |
+|---|---|---|
+| **0 — Foundation Setup** | ✅ **Complete** | All 6 tasks done. Build clean (51.88 kB CSS / 237.95 kB JS / 597 ms). |
+| **1 — Style Guide page** | ✅ **Complete** | Single task. Real brand logos wired into § 03. Build 58.89 kB CSS / 405.88 kB JS / 1.21 s. |
+| **2 — Layout (Nav, Footer, transitions)** | ✅ **Complete** | All 5 tasks. Build 63.96 kB CSS / 464.16 kB JS / 847 ms. |
+| **3 — Homepage** | ⏭ **Next** | |
+| 3 — Homepage | ⬜ Pending | |
+| 4 — Models listing | ⬜ Pending | |
+| 5 — Model detail + inquiry dialog | ⬜ Pending | |
+| 6 — Events list + detail | ⬜ Pending | |
+| 7 — About | ⬜ Pending | |
+| 8 — Become a Model | ⬜ Pending | |
+| 9 — Contact | ⬜ Pending | |
+| 10 — Global components | ⬜ Pending | |
+| 11 — Responsive polish | ⬜ Pending | |
+| 12 — Functionality (Supabase) | 🚫 Deferred | Do not start without explicit user go-ahead. |
+
+### Phase 0 Progress Log
+- ✅ **0.0** Added `Design-Reference/` and `.env.local` to `.gitignore`
+- ✅ **0.1** Tailwind v4 `@theme` tokens (ink/paper/gold/mute/error/hairline) + Playfair Display + Inter from Google Fonts + base styles + defensive `* { border-radius: 0 !important }` + `.pbm-link` and `.pbm-bar` utility classes
+- ✅ **0.2** `npx shadcn@latest init -t vite -b radix -p nova` — note: shadcn 4.x CLI uses different flags than older versions. Required adding `paths: { "@/*": ["./src/*"] }` to tsconfig (NO `baseUrl` — deprecated in TS 6). `vite.config.ts` got `resolve.alias` for `@`.
+- ✅ **0.3** Installed `dialog sheet input textarea navigation-menu carousel card label` plus the `button` from init. **`form` does not exist in the radix-nova registry** — will install `react-hook-form` + `zod` directly in Phase 8.
+- ✅ **0.4** Rewrote `src/components/ui/input.tsx` and `textarea.tsx` to be editorial underline-only (no box, no rounded, ink bottom border, gold focus underline, red error underline). Other primitives left as-is — defensive CSS `!important` rule kills any rounded corners they emit. Remapped shadcn's `:root` semantic tokens (`--background`, `--foreground`, `--primary`, `--border`, `--ring`, `--accent`, etc.) from oklch stone defaults to PBM hex palette so any shadcn primitive that uses semantic tokens lands in our colors automatically. Removed shadcn's injected Geist font.
+- ✅ **0.5** Created `src/lib/motion.ts` (easeOutExpo, fadeUp, stagger, drawLineX/Y, imageReveal, curtain, viewportDefault), `src/lib/placeholder-assets.ts` (Unsplash hotlinks for runway/12 women/10 men/editorial pool/6 events/10 client wordmarks/5 press logos/founder portrait/3 past discoveries), `src/lib/supabase.ts` (returns `null` if env unset — no crash), `src/hooks/useScrolled.ts`.
+- ✅ **0.6** `BrowserRouter` wired in `main.tsx`, all 11 routes defined in `App.tsx` under a `Layout` parent route, 10 stub pages created in `src/pages/` (each shows page name in Playfair + "Phase 0 — Stub" eyebrow), `src/components/layout/Layout.tsx` is an empty shell with `<Outlet />` ready for Phase 2 nav/footer.
+
+### Phase 0 deviations from original plan
+1. **shadcn `form` skipped** — not in `radix-nova` registry. Phase 8 will use `react-hook-form` + `zod` directly with our editorial underline inputs (cleaner, no shadcn `<Form>` wrapper to strip).
+2. **No Button variants for `pbm-link` / `pbm-bar`** — defined as plain CSS utility classes in `index.css` instead, applied directly to `<a>` and `<button>`.
+3. **No commits yet.** Phase 0 work is staged/uncommitted in the working tree. The user will commit at a checkpoint of their choosing.
+
+### Phase 1 Progress Log
+- ✅ **1.1** Replaced `src/pages/StyleGuide.tsx` stub with the full visual system reference page covering all 8 sections from Screen J: header, color palette, type scale (Playfair 160→24px responsive + Inter body 18→12px), logo lockups, interactive library, input library (5 states), spacing scale + 12-col grid, Lucide icon row, sign-off footer.
+- ✅ Real brand logos copied from `/Logo` → `public/images/logos/{pb-associates,pb-models}.png` and centralized in `src/lib/placeholder-assets.ts` as `brandLogos`. Style guide § 03 uses `<img>` tags pointing at those paths.
+- ✅ User reviewed at desktop (1440) and mobile (375) and signed off the layout, type scale, and gold tone.
+
+### Phase 1 deviations from original plan
+1. **`Section` wrapper has no scroll-triggered motion.** Initial implementation used `whileInView`, which kept sections invisible in Playwright full-page screenshots (Framer's IntersectionObserver only fires on real viewport scroll, not screenshot stitching). Switched to plain `<section>` — only the header animates on mount. Reference pages should be calm anyway.
+2. **Lucide brand icons missing.** `lucide-react@1.8` strips Instagram/LinkedIn for trademark reasons. Inlined `InstagramGlyph` and `LinkedinGlyph` as tiny local SVG components in `StyleGuide.tsx` — will be lifted into `src/components/icons/` when Phase 2 footer needs them.
+3. **Brand mark accent magenta.** The Associates logo has a baked-in `~#e6007e` magenta bar. **Decision: keep it logo-only** — gold remains the only site accent. No `--color-brand-magenta` token added. Visual-system spec is unchanged. The magenta exists exclusively inside the supplied PNG.
+4. **Type scale labels updated** to read "160px desktop" etc. — clarifies that mobile sizes are clamped (per CLAUDE.md cap of 56px on mobile).
+
+### Phase 2 Progress Log
+- ✅ **2.1** `src/components/layout/Nav.tsx` — three-zone fixed nav with `useScrolled`, animated height (112 → 72 px) and bg color, NavLink-driven active gold underline, hover-driven gold underline draw-in via `group`/scale-x animation, hamburger button on `<lg`. Three-zone wordmark layout uses stacked Playfair text per spec (no PNG — see deviation #1).
+- ✅ **2.2** `src/components/layout/ModelsDropdown.tsx` — dark full-width dropdown sliding from nav with 12-col grid: two grayscale model previews (cols 1–5), three Playfair text links with arrow shifts (cols 7–9), Featured This Month list (cols 10–12), full-roster CTA right-aligned with hairline divider. Dropdown is suppressed when already on `/models`.
+- ✅ **2.3** `src/components/layout/MobileMenu.tsx` — Sheet from right, full-viewport `#0a0a0a`, PB. monogram in gold top-left, custom × close, numbered Playfair menu items (01–06) with gold prefixes, hairline dividers, expandable Models with `+`/`−` toggle and tracked-caps sub-items, pinned-bottom FOLLOW + city list. Added `SheetDescription` to satisfy Radix `aria-describedby` requirement.
+- ✅ **2.4** `src/components/layout/Footer.tsx` — desktop two-col dark footer per Screen 1 spec (Playfair "Prasad / Bidapa." stacked logo + STUDIO address left; The House / The Work / Follow nav columns + newsletter form right; copyright + "Crafted in Bengaluru" hairline row). Mobile stacked-vertical layout per F2 spec, separator-driven sequence: logo → address → newsletter → nav → socials → © row.
+- ✅ **2.5** `src/components/layout/PageTransition.tsx` — fixed full-viewport ink curtain, mounted via `key={location.pathname}`, starts covering at `y: 0` with PB. monogram + drawn-gold-line + "LOADING" label visible, holds 350 ms, then sweeps to `y: -100%` over 900 ms. `pointer-events-none` so the new page is interactive instantly.
+- ✅ Layout shell now wires `<Nav />`, `<Outlet />`, `<Footer />`, `<PageTransition />`.
+
+### Phase 2 deviations from original plan
+1. **Nav defaults to solid dark on every non-`/` route.** Original spec implied transparent-over-hero everywhere, but transparent state over light pages renders the off-white wordmark text invisible. Solid dark-on-all-non-home is the only correct interpretation. Transparent state still applies on `/` until scroll past 80 px.
+2. **Brand PNG logos not used in nav / footer / mobile menu.** Supplied logos (`/Logo/Prasad Bidappa Associates.png` and `…Models.png`) are dark-on-light only. Every dark-context surface in Phase 2 (nav over hero, scrolled nav, footer, mobile menu) requires a light/inverted PNG that has not been supplied. Used the spec's text wordmark fallback (stacked Playfair) so the chrome ships now; a one-line swap will replace text wordmarks with `<img src={brandLogos.*}>` once inverted assets exist.
+3. **Right wordmark hidden on `<lg`** (mobile/tablet). 375 px doesn't fit two stacked wordmarks plus a hamburger — A2 spec only references the left wordmark + hamburger on mobile.
+4. **Page transition is a one-way reveal**, not a sweep-in-then-sweep-out. The original H1 spec reads two ways — a "panel sweeping in from bottom covering bottom 70%" plus a separate "loader" frame. Implementing both as a multi-stage keyframe with route-content swap during the hold required either an awkward portal-managed AnimatePresence dance or accepting a flash of the new page during the cover phase. Chose the simpler editorial pattern: new route mounts immediately, curtain starts fully covering, holds 350 ms with monogram visible, then sweeps off the top revealing the new page. Same total ~1.25 s, simpler implementation, no flash.
+5. **No Framer Motion `AnimatePresence` wrapping `<Outlet />`.** Re-keying the transition by `location.pathname` is sufficient and avoids the rendering subtleties of mode="wait" with a curtain.
+
+---
+
+## 🚀 Resume in next session — bootstrap checklist
+
+**Read these files first (in order) to load context:**
+1. `CLAUDE.md` — durable instructions, design system rules, Stitch reference mapping, workflow rules
+2. `docs/design/visual-system.md` — full per-screen design spec
+3. `docs/plans/2026-04-13-pbm-website-ui-build.md` (this file) — plan + progress log
+4. `Design-Reference/stitch/visual_system_reference_sheet/screen.png` — Stitch's take on the style guide (for Phase 1)
+5. `src/index.css` — to know what's already in `@theme` and which utility classes exist
+
+**Verify the foundation still works:**
+```bash
+cd "C:/Users/Pc/Desktop/4AM Projects/PBM/PBM/PBM/prasad-bidapa-website"
+npm run build
+```
+Expect: clean build, ~600ms, no warnings.
+
+**Start dev server:**
+```bash
+npm run dev
+```
+Visit `http://localhost:5173/style-guide` to confirm the stub renders.
+
+**Then begin Phase 1:**
+- Re-read this file's "Phase 1 — Style Guide Page" section
+- Open `Design-Reference/stitch/visual_system_reference_sheet/screen.png` for layout reference
+- Replace the `src/pages/StyleGuide.tsx` stub with the full visual system reference page
+- Pause at the Phase 1 Checkpoint for user review
+
+**Asset patterns already defined and ready to use:**
+- `import { ... } from "@/lib/placeholder-assets"` — Unsplash hotlinks
+- `import { fadeUp, stagger, easeOutExpo } from "@/lib/motion"` — Framer Motion variants
+- `import { useScrolled } from "@/hooks/useScrolled"` — nav scroll state
+- Tailwind utilities: `bg-paper`, `text-ink`, `text-gold`, `text-mute`, `border-hairline`, `font-display`, `font-sans`, `tracking-[0.2em]`, `pbm-link`, `pbm-bar`
+- shadcn `cn()` helper: `import { cn } from "@/lib/utils"`
+
+---
+
 **Goal:** Ship a magazine-quality, editorial luxury fashion-agency website for Prasad Bidapa Models & Associates, matching the visual system in `docs/design/visual-system.md`. UI-only in this plan; functionality is a separate phase.
 
 **Architecture:** Vite + React 19 + TypeScript + Tailwind v4 (CSS-first `@theme`) + Framer Motion 12 + react-router v7. shadcn/ui primitives heavily overridden to remove rounded corners, shadows, and SaaS defaults. One route component per screen, reusable section components for repeated layouts.

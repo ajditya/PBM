@@ -88,7 +88,12 @@ Vite 8 + React 19 + TypeScript 6 + Tailwind v4 (CSS-first `@theme` config — NO
 - **Placeholders:** Unsplash editorial fashion photos via direct URL (`https://images.unsplash.com/...`). Preferred query: editorial portrait, runway, B&W fashion.
 - Real photography will replace placeholders later.
 - Self-hosted assets go in `public/images/`.
+- **Brand logos:** real PNGs in `public/images/logos/` (`pb-associates.png`, `pb-models.png`), exposed via `brandLogos` in `src/lib/placeholder-assets.ts`.
 - Hero video: Pexels / Coverr placeholder, `<video>` with poster fallback.
+
+## Brand mark colors
+- The Associates logo contains a baked-in **magenta bar (~`#e6007e`)** that is part of the supplied mark. **It is logo-only.** Do not introduce magenta as a CSS token, accent, or hover color anywhere else on the site. Gold (`#c9a961`) remains the single site accent.
+- The supplied PNGs are dark-on-light only. For dark-context surfaces (nav over hero, footer, mobile menu) use either a request for inverted assets or fall back to the text wordmark spec until inverted PNGs are supplied.
 
 ## Brand facts (use when writing copy)
 - Founder: **Prasad Bidapa**, NID Ahmedabad alumnus, 40+ years in fashion, mentored by Martand Singh and Pupul Jayakar.

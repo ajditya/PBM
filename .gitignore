@@ -26,6 +26,12 @@ dist-ssr
 # Local design references (Stitch outputs, Figma exports, etc.)
 Design-Reference/
 
+# Source brand logo masters — deployed copies live in public/images/logos/
+Logo/
+
+# Playwright MCP screenshots and snapshots
+.playwright-mcp/
+
 # Local environment
 .env
 .env.local
