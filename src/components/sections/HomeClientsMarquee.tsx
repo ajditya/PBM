@@ -19,9 +19,7 @@ export default function HomeClientsMarquee() {
       aria-label="Trusted by"
       className="relative overflow-hidden border-y border-hairline bg-paper py-10"
     >
-      <p className="mb-8 text-center text-[11px] tracking-[0.32em] uppercase text-mute">
-        Trusted by
-      </p>
+      <p className="pbm-eyebrow-mute mb-8 text-center">Trusted by</p>
 
       <div className="relative w-full overflow-hidden">
         <motion.div
@@ -36,8 +34,7 @@ export default function HomeClientsMarquee() {
           {[...clientLogos, ...clientLogos].map((name, i) => (
             <span
               key={`${name}-${i}`}
-              className="font-display text-[22px] tracking-[0.18em] uppercase text-ink/55 sm:text-[26px]"
-              style={{ fontWeight: 300 }}
+              className="pbm-display-xs uppercase tracking-[0.18em] text-ink/55"
             >
               {name}
             </span>

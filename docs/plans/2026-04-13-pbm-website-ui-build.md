@@ -11,12 +11,11 @@
 | **0 — Foundation Setup** | ✅ **Complete** | All 6 tasks done. Build clean (51.88 kB CSS / 237.95 kB JS / 597 ms). |
 | **1 — Style Guide page** | ✅ **Complete** | Single task. Real brand logos wired into § 03. Build 58.89 kB CSS / 405.88 kB JS / 1.21 s. |
 | **2 — Layout (Nav, Footer, transitions)** | ✅ **Complete** | All 5 tasks. Build 63.96 kB CSS / 464.16 kB JS / 847 ms. |
-| **3 — Homepage** | ⏭ **Next** | |
-| 3 — Homepage | ⬜ Pending | |
-| 4 — Models listing | ⬜ Pending | |
-| 5 — Model detail + inquiry dialog | ⬜ Pending | |
-| 6 — Events list + detail | ⬜ Pending | |
-| 7 — About | ⬜ Pending | |
+| **3 — Homepage** | ✅ **Complete** | All 6 folds shipped under `src/components/sections/Home*.tsx`. |
+| **4 — Models listing** | ✅ **Complete** | `ModelsList.tsx` + `ModelCard.tsx` + `Pagination.tsx` shipped. |
+| **5 — Model detail + inquiry dialog** | ✅ **Complete (with open A/B)** | Hero + gallery + InquiryDialog (C1–C4) shipped. **Slider-vs-gallery decision still open** — `ModelDetail.tsx` renders `EditorialSlider` for Men, `EditorialGallery` for Women side-by-side until user picks one. |
+| **6 — Events list + detail** | ✅ **Complete** | All 4 tasks. Build 83.28 kB CSS / 515.54 kB JS / 2.42 s. |
+| **7 — About** | ⏭ **Next** | |
 | 8 — Become a Model | ⬜ Pending | |
 | 9 — Contact | ⬜ Pending | |
 | 10 — Global components | ⬜ Pending | |
@@ -63,35 +62,56 @@
 4. **Page transition is a one-way reveal**, not a sweep-in-then-sweep-out. The original H1 spec reads two ways — a "panel sweeping in from bottom covering bottom 70%" plus a separate "loader" frame. Implementing both as a multi-stage keyframe with route-content swap during the hold required either an awkward portal-managed AnimatePresence dance or accepting a flash of the new page during the cover phase. Chose the simpler editorial pattern: new route mounts immediately, curtain starts fully covering, holds 350 ms with monogram visible, then sweeps off the top revealing the new page. Same total ~1.25 s, simpler implementation, no flash.
 5. **No Framer Motion `AnimatePresence` wrapping `<Outlet />`.** Re-keying the transition by `location.pathname` is sufficient and avoids the rendering subtleties of mode="wait" with a curtain.
 
+### Phase 6 Progress Log
+- ✅ **6.1** Replaced `src/pages/Events.tsx` stub with the full Screen 4 layout: 50vh header (eyebrow "PRASAD BIDAPA ASSOCIATES · SINCE 1985" + 200px Playfair "Events."), sticky tab bar (FLAGSHIP · UPCOMING · PAST · RECURRING) with animated gold underline. Tab state is local; `top-[72px]` clears the scrolled nav.
+- ✅ **6.2** New `src/components/sections/MegaModelHuntFeature.tsx` — 21:9 landscape hero with bottom gradient, two-col body: stacked 120px Playfair "Mega / Model / Hunt." + gold "THE FLAGSHIP · 22 EDITIONS" eyebrow on the left, intro paragraph + 4-col stats row (22 / 8,000+ / 150+ / 6) + "APPLY FOR 2026 EDITION →" CTA on the right. Wired into Events.tsx, only renders on the Flagship tab.
+- ✅ **6.3** Rewrote `src/components/EventCard.tsx` for full E2 hover: 8px image lift, date → gold, gold underline draw on VIEW (manual scale-x span — `.pbm-link::after` self-hover wouldn't fire from group hover), faint ground-reference shadow (the only shadow allowed by spec), "01 / 04" pagination indicator fading in top-right of image (via new optional `index` + `total` props). Image aspect ratio bumped from 3:4 → 4:5 to match Screen 4 / E2 spec. Events.tsx grid is 3-col desktop / 1-col mobile, filters by tab type, with E3 empty state for tabs that yield zero events.
+- ✅ **6.4** Replaced `src/pages/EventDetail.tsx` stub with the full E1 layout: 80vh hero with dark gradient + bottom-left content block (gold eyebrow, 120px Playfair title, hero city row, 32px gold date), asymmetric 12-col body (sticky 4-col meta sidebar with 6 rows + REGISTER FOR AUDITIONS bar; offset 7-col long-form right with About / Past Discoveries 3-col grayscale grid / City Schedule table). AS SEEN IN press strip with grayscale wordmarks. Related events grid + "All events →" link at the bottom.
+- ✅ Final build clean: 83.28 kB CSS / 515.54 kB JS / 2.42 s.
+
+### Phase 6 deviations from original plan
+1. **Slider-vs-gallery A/B left in place** (Phase 5 carryover). User explicitly chose to keep `ModelDetail.tsx` rendering both `EditorialGallery` (Women) and `EditorialSlider` (Men) side-by-side rather than collapse before Phase 6. Decision still open — first thing for the Phase 6 checkpoint review.
+2. **Tab content interpretation.** The visual-system spec describes "Flagship section (default view)" but doesn't define what the other tabs show. Implemented: FLAGSHIP = `MegaModelHuntFeature` + "Other properties." grid (every non-flagship event); UPCOMING / PAST / RECURRING = filtered grid only, no flagship feature. E3 empty state used when a filter yields zero.
+3. **EventDetail body content is flagship-anchored regardless of slug.** The spec's body content (Past Discoveries, City Schedule, AS SEEN IN press, "About the Hunt") is Mega Model Hunt-specific. Since the events array only carries title/cover/date/city/type, the page falls back to MMH content for every slug while UI is being shaped. Per-event copy lands in Phase 12.
+4. **EventCard `.pbm-link` swap.** The shared `.pbm-link::after` underline animates on the link's own `:hover` — that doesn't fire when the user hovers anywhere else inside the parent group (e.g. the image). Replaced VIEW's `pbm-link` with a manual `<span>` + scaled `bg-gold` underline so the draw triggers on `group-hover`. Net: same look, but driven by the parent card hover instead of just the link's bounding box.
+5. **Faint ground shadow** on EventCard hover is implemented as a blurred `radial-gradient` div pinned to the bottom of the image, opacity 0 → 30% on group-hover. Stays within the "no shadows except event card hover" spec exemption.
+6. **Sticky tab bar offset = `top-[72px]`** to clear the scrolled-nav height. Worth eyeballing in the browser — if the unscrolled 112px nav state ever overlaps it during the brief transition window, this needs to bump up.
+
 ---
 
 ## 🚀 Resume in next session — bootstrap checklist
 
 **Read these files first (in order) to load context:**
 1. `CLAUDE.md` — durable instructions, design system rules, Stitch reference mapping, workflow rules
-2. `docs/design/visual-system.md` — full per-screen design spec
+2. `docs/design/visual-system.md` — full per-screen design spec (Screen 5 for Phase 7)
 3. `docs/plans/2026-04-13-pbm-website-ui-build.md` (this file) — plan + progress log
-4. `Design-Reference/stitch/visual_system_reference_sheet/screen.png` — Stitch's take on the style guide (for Phase 1)
+4. `Design-Reference/stitch/about_us_desktop/screen.png`, `about_us_signature_ips_updated/screen.png`, `heritage_editorial/screen.png` — Stitch's takes on About (Phase 7)
 5. `src/index.css` — to know what's already in `@theme` and which utility classes exist
+6. `src/lib/placeholder-assets.ts` — already exposes `founderPortrait`, `pastDiscoveries`, `clientLogos`, `events` for About sections
 
-**Verify the foundation still works:**
+**Verify the build still works:**
 ```bash
 cd "C:/Users/Pc/Desktop/4AM Projects/PBM/PBM/PBM/prasad-bidapa-website"
 npm run build
 ```
-Expect: clean build, ~600ms, no warnings.
+Expect: clean build, ~2.4s. Last known good: 83.28 kB CSS / 515.54 kB JS.
 
 **Start dev server:**
 ```bash
 npm run dev
 ```
-Visit `http://localhost:5173/style-guide` to confirm the stub renders.
+Visit `http://localhost:5173/events` and `http://localhost:5173/events/mega-model-hunt-2026` to confirm Phase 6 still renders before moving on.
 
-**Then begin Phase 1:**
-- Re-read this file's "Phase 1 — Style Guide Page" section
-- Open `Design-Reference/stitch/visual_system_reference_sheet/screen.png` for layout reference
-- Replace the `src/pages/StyleGuide.tsx` stub with the full visual system reference page
-- Pause at the Phase 1 Checkpoint for user review
+**Outstanding Phase 5/6 checkpoint items (resolve before Phase 7):**
+- **Slider vs gallery decision** — `src/pages/ModelDetail.tsx` still renders `EditorialSlider` for Men and `EditorialGallery` for Women. Pick one, collapse the conditional, delete the loser component.
+- **Phase 6 visual review** — Playwright screenshots at 375 / 768 / 1440 of `/events` (all four tabs) and `/events/mega-model-hunt-2026`. Verify sticky tab bar doesn't overlap the unscrolled nav, E2 hover animations feel right, ground shadow is subtle enough.
+
+**Then begin Phase 7 — About:**
+- Re-read this file's "Phase 7 — About" section
+- Open the three Stitch about screenshots above for layout reference (do not copy)
+- Replace the `src/pages/About.tsx` stub with the hero + 5 sections per Screen 5 spec (Associates → Models → Founder full-bleed dark → Properties grid → Team)
+- Create the 5 section components under `src/components/sections/` (`AboutAssociates`, `AboutModels`, `AboutFounder`, `AboutProperties`, `AboutTeam`)
+- Pause at the Phase 7 Checkpoint for user review
 
 **Asset patterns already defined and ready to use:**
 - `import { ... } from "@/lib/placeholder-assets"` — Unsplash hotlinks

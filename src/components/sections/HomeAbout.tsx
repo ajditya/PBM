@@ -51,27 +51,26 @@ export default function HomeAbout() {
             }}
             className="lg:col-span-6 lg:col-start-7 lg:pt-20"
           >
-            <motion.p
-              variants={fadeUp}
-              className="mb-10 text-[11px] tracking-[0.32em] uppercase text-gold"
-            >
+            <motion.p variants={fadeUp} className="pbm-eyebrow mb-10">
               The Mentor
             </motion.p>
 
-            <motion.h2
-              variants={fadeUp}
-              className="font-display font-light text-[44px] leading-[1.0] tracking-[-0.01em] sm:text-[56px] lg:text-[72px]"
-            >
-              Four decades
+            <motion.h2 variants={fadeUp} className="pbm-display-l">
+              Prasad
               <br />
-              shaping Indian
-              <br />
-              fashion.
+              Bidapa
             </motion.h2>
+
+            <motion.p
+              variants={fadeUp}
+              className="pbm-display-s mt-8 text-ink/70"
+            >
+              Four decades shaping Indian fashion.
+            </motion.p>
 
             <motion.div
               variants={fadeUp}
-              className="mt-12 max-w-[42ch] space-y-6 text-[15px] leading-[1.7] text-ink/80"
+              className="pbm-body mt-12 max-w-[42ch] space-y-6"
             >
               <p>
                 An NID Ahmedabad alumnus mentored by Martand Singh and
@@ -89,7 +88,7 @@ export default function HomeAbout() {
 
             <motion.blockquote
               variants={fadeUp}
-              className="mt-14 max-w-[36ch] border-l border-gold pl-6 font-display text-[24px] italic leading-[1.3] text-gold sm:text-[28px] lg:text-[32px]"
+              className="pbm-quote mt-14 max-w-[36ch] border-l border-gold pl-6"
             >
               "India's master artisans are our national treasures."
             </motion.blockquote>

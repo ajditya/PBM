@@ -39,25 +39,26 @@ Mobile-first but design both 375px and 1440px frames.
 Sticky, transparent over hero, solid `#0a0a0a` after scroll. Three-zone layout.
 - **Top-left:** small wordmark logo "PRASAD BIDAPA / ASSOCIATES" stacked in two lines, all-caps Playfair
 - **Top-right:** matching wordmark "PRASAD BIDAPA / MODELS"
-- **Center:** horizontal nav links in Inter all-caps 12px tracked: HOME · MODELS ▾ · EVENTS · BECOME A MODEL · ABOUT · CONTACT
+- **Center:** horizontal nav links in Inter all-caps 13px tracked: HOME · MODELS ▾ · EVENTS · BECOME A MODEL · ABOUT · CONTACT. Wordmarks: line1 15px Playfair, line2 10px Inter mute.
 
 ## Hero (100vh)
-Full-bleed background showing a fashion runway scene (model walking, dramatic lighting). Dark gradient overlay from bottom (60% black) to top (20% black).
+Self-hosted runway/rampwalk footage (`public/videos/hero-rampwalk.mp4`), full-bleed `<video>`, dark gradient overlay from bottom (60% black) to top (20% black).
 - **Bottom-left content:** tiny gold eyebrow "EST. 1985 · BENGALURU" in tracked small caps, then massive Playfair headline in white "Faces that / define fashion." set on two lines, 140px desktop / 56px mobile, line-height 0.95. Below: a thin "DISCOVER →" link in white with underline.
 - **Bottom-right:** vertical text "SCROLL" with a thin animated line.
 
 ## Fold 2 — About Prasad Bidapa
 Off-white background, 160px vertical padding. Asymmetric two-column.
-- **Left 5 cols:** tall vertical portrait of Prasad Bidapa (B&W, editorial)
-- **Right 6 cols, offset down by 80px:** small gold label "THE MENTOR", Playfair headline "Four decades / shaping Indian / fashion." (72px), then two short Inter paragraphs about NID Ahmedabad, 40+ years, and discovering Deepika Padukone, Anushka Sharma, Lara Dutta, John Abraham, Arjun Rampal, Jacqueline Fernandez. Large pull-quote in gold Playfair italic: "India's master artisans are our national treasures." Thin "READ THE STORY →" link.
+- **Left 5 cols:** tall vertical portrait of Prasad Bidapa — real photo (`public/images/founder/prasad-01.jpg`), grayscale.
+- **Right 6 cols, offset down by 80px:** small gold label "THE MENTOR", massive Playfair display heading "Prasad / Bidapa" (96–144px, line-height 0.92), then subheading in Playfair light "Four decades shaping Indian fashion." (26–34px, ink/70). Two short Inter paragraphs about NID Ahmedabad, 40+ years, and discovering Deepika Padukone, Anushka Sharma, Lara Dutta, John Abraham, Arjun Rampal, Jacqueline Fernandez. Large pull-quote in gold Playfair italic: "India's master artisans are our national treasures." Thin "READ THE STORY →" link.
 
-## Fold 3 — Prasad Bidapa Models
+## Fold 3 — Prasad Bidapa Associates
+Off-white background, mirrored layout. Image collage on the LEFT (three-shot asymmetric collage of past events), text on the RIGHT.
+- **Right 5 cols:** tiny "01 / THE EVENTS" in gold, Playfair **bold** display headline "Prasad / Bidapa / Associates" (88–136px, tracking -0.02em), short paragraph on Mega Model Hunt + fashion-week production, "EXPLORE EVENTS →" CTA.
+
+## Fold 4 — Prasad Bidapa Models
 Full-bleed dark `#0a0a0a` section, 100vh.
 - **Right:** three-image asymmetric collage (one tall, two stacked)
-- **Left:** tiny "01 / THE AGENCY" in gold, Playfair headline in off-white "The faces / behind the / brands." (96px), short paragraph, then "MEET THE MODELS →" CTA
-
-## Fold 4 — Prasad Bidapa Associates
-Mirrored layout, off-white background. Image collage on the LEFT, text on the right. Label "02 / THE EVENTS", headline "Where talent / is discovered." Mention flagship Mega Model Hunt. CTA "EXPLORE EVENTS →".
+- **Left:** tiny "02 / THE AGENCY" in gold, Playfair **bold** display headline in off-white "Prasad / Bidapa / Models" (88–136px, tracking -0.02em), short paragraph on the roster, "MEET THE MODELS →" CTA.
 
 ## Fold 5 — Clients marquee
 Single horizontal row of 8–10 grayscale client logos (placeholder fashion brands), thin hairline divider above and below, label "TRUSTED BY" centered above in tracked small caps. White background, 120px tall.

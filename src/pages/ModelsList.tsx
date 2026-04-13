@@ -58,7 +58,7 @@ export default function ModelsList() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: easeOutExpo }}
-            className="mb-10 text-[11px] uppercase tracking-[0.32em] text-mute sm:mb-14"
+            className="pbm-eyebrow-mute mb-10 sm:mb-14"
           >
             01 — The Roster · {count} Talents
           </motion.p>
@@ -72,7 +72,7 @@ export default function ModelsList() {
               ease: easeOutExpo,
               delay: 0.1,
             }}
-            className="font-display font-light leading-[0.85] tracking-[-0.03em] text-[88px] sm:text-[140px] lg:text-[180px] xl:text-[200px]"
+            className="pbm-display-xl"
           >
             {gender}.
           </motion.h1>
@@ -95,7 +95,7 @@ export default function ModelsList() {
                   key={f}
                   type="button"
                   onClick={() => setActiveFilter(f)}
-                  className={`relative inline-flex h-6 items-center px-px text-[11px] uppercase tracking-[0.32em] transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  className={`pbm-ui relative inline-flex h-6 items-center px-px transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                     isActive ? "text-ink" : "text-mute hover:text-ink"
                   }`}
                   aria-pressed={isActive}
@@ -111,9 +111,7 @@ export default function ModelsList() {
               )
             })}
 
-            <span className="ml-auto text-[10px] uppercase tracking-[0.32em] text-mute">
-              {count} Results
-            </span>
+            <span className="pbm-meta-label ml-auto">{count} Results</span>
           </motion.div>
         </div>
       </section>

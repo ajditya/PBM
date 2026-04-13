@@ -97,6 +97,120 @@
 }
 
 @layer utilities {
+  /* ════════════════════════════════════════════════════════
+   * Canonical typography scale — apply via these classes
+   * everywhere. Never recreate bespoke size/weight combos.
+   * ════════════════════════════════════════════════════════ */
+
+  /* Display — Playfair light, editorial headlines */
+  .pbm-display-xl {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(3.5rem, 11vw + 0.5rem, 12rem);
+    line-height: 0.88;
+    letter-spacing: -0.025em;
+  }
+  .pbm-display-l {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.75rem, 7.5vw + 0.5rem, 9rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+  .pbm-display-m {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(2.25rem, 4.5vw + 0.5rem, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+  }
+  .pbm-display-s {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.75rem, 2.5vw + 0.5rem, 3rem);
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+  }
+  .pbm-display-xs {
+    font-family: var(--font-display);
+    font-weight: 300;
+    font-size: clamp(1.25rem, 1vw + 0.8rem, 1.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.005em;
+  }
+
+  /* Pull-quote — gold italic */
+  .pbm-quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(1.5rem, 1.2vw + 1rem, 2rem);
+    line-height: 1.3;
+    color: var(--color-gold);
+  }
+
+  /* Eyebrow — tracked small-caps section labels */
+  .pbm-eyebrow {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 400;
+    letter-spacing: 0.32em;
+    color: var(--color-gold);
+  }
+  .pbm-eyebrow-mute {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.32em;
+    color: var(--color-mute);
+  }
+
+  /* Body copy */
+  .pbm-body {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem; /* 15px */
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    color: rgb(10 10 10 / 0.82);
+  }
+  .pbm-body-inverse {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    color: rgb(250 250 247 / 0.78);
+  }
+
+  /* UI / nav / button text */
+  .pbm-ui {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 400;
+    letter-spacing: 0.2em;
+  }
+
+  /* Meta stat label + value (used in dl rows) */
+  .pbm-meta-label {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    font-size: 0.625rem; /* 10px */
+    font-weight: 400;
+    letter-spacing: 0.32em;
+    color: var(--color-mute);
+  }
+  .pbm-meta-value {
+    font-family: var(--font-sans);
+    font-size: 0.875rem; /* 14px */
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--color-ink);
+  }
+
   /* Tracked small-caps label utility used across nav, eyebrows, form labels */
   .tracking-label {
     letter-spacing: 0.2em;

@@ -92,8 +92,8 @@ Vite 8 + React 19 + TypeScript 6 + Tailwind v4 (CSS-first `@theme` config — NO
 - Hero video: Pexels / Coverr placeholder, `<video>` with poster fallback.
 
 ## Brand mark colors
-- The Associates logo contains a baked-in **magenta bar (~`#e6007e`)** that is part of the supplied mark. **It is logo-only.** Do not introduce magenta as a CSS token, accent, or hover color anywhere else on the site. Gold (`#c9a961`) remains the single site accent.
-- The supplied PNGs are dark-on-light only. For dark-context surfaces (nav over hero, footer, mobile menu) use either a request for inverted assets or fall back to the text wordmark spec until inverted PNGs are supplied.
+- The Associates logo contains a baked-in **magenta bar (~`#e6007e`)** that is part of the supplied mark. **The magenta is permitted to appear inside the supplied logo PNGs as designed** — render the logos with their original colors. What is still forbidden: introducing magenta as a CSS token, accent, hover state, divider, or any non-logo design element anywhere on the site. Gold (`#c9a961`) remains the single site accent.
+- The supplied PNGs are dark-on-light with transparent backgrounds. For dark-context surfaces (nav over hero, footer, mobile menu) wrap the logo in a small `bg-paper` chip so the original mark — including the magenta bar — reads cleanly. Do not invert or recolor the logo.
 
 ## Brand facts (use when writing copy)
 - Founder: **Prasad Bidapa**, NID Ahmedabad alumnus, 40+ years in fashion, mentored by Martand Singh and Pupul Jayakar.

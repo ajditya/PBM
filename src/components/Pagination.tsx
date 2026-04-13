@@ -25,7 +25,7 @@ export default function Pagination({ current, total, onPrev, onNext }: Props) {
         type="button"
         onClick={onPrev}
         disabled={atStart}
-        className="group inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-mute transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-ink disabled:cursor-not-allowed disabled:text-mute/30 disabled:hover:text-mute/30"
+        className="pbm-meta-label group inline-flex items-center gap-3 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-ink disabled:cursor-not-allowed disabled:text-mute/30 disabled:hover:text-mute/30"
       >
         <span
           aria-hidden
@@ -36,7 +36,7 @@ export default function Pagination({ current, total, onPrev, onNext }: Props) {
         Previous
       </button>
 
-      <span className="font-display text-[28px] font-light leading-none tracking-[-0.01em] text-ink sm:text-[32px] lg:text-[36px]">
+      <span className="pbm-display-s text-ink">
         {fmt(current)} <span className="px-1 text-mute">/</span> {fmt(total)}
       </span>
 
@@ -44,7 +44,7 @@ export default function Pagination({ current, total, onPrev, onNext }: Props) {
         type="button"
         onClick={onNext}
         disabled={atEnd}
-        className="group inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.32em] text-mute transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-ink disabled:cursor-not-allowed disabled:text-mute/30 disabled:hover:text-mute/30"
+        className="pbm-meta-label group inline-flex items-center gap-3 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-ink disabled:cursor-not-allowed disabled:text-mute/30 disabled:hover:text-mute/30"
       >
         Next
         <span

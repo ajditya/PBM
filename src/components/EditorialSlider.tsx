@@ -69,8 +69,8 @@ export default function EditorialSlider({ pool }: Props) {
     >
       <div className="mx-auto w-full max-w-[1600px] px-6 sm:px-10 lg:px-14">
         {/* ── Stage ── */}
-        <div className="relative mx-auto w-full">
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5">
+        <div className="relative mx-auto w-full max-w-[460px] sm:max-w-[520px] lg:max-w-[580px]">
+          <div className="relative aspect-[5/7] w-full overflow-hidden bg-ink/5">
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.img
                 key={source[safeIndex]}
@@ -151,7 +151,7 @@ export default function EditorialSlider({ pool }: Props) {
                   className="group relative shrink-0 focus:outline-none"
                 >
                   <div
-                    className={`relative aspect-[3/4] w-12 overflow-hidden bg-ink/5 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:w-16 lg:w-20 ${
+                    className={`relative aspect-[5/7] w-12 overflow-hidden bg-ink/5 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:w-16 lg:w-20 ${
                       isActive ? "opacity-100" : "opacity-50 group-hover:opacity-90"
                     }`}
                   >

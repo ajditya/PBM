@@ -1,13 +1,93 @@
+import { motion } from "framer-motion"
+
+import AboutAssociates from "@/components/sections/AboutAssociates"
+import AboutFounder from "@/components/sections/AboutFounder"
+import AboutModels from "@/components/sections/AboutModels"
+import AboutProperties from "@/components/sections/AboutProperties"
+import AboutTeam from "@/components/sections/AboutTeam"
+import { easeOutExpo } from "@/lib/motion"
+
+/* ────────────────────────────────────────────────────────────
+ * Screen 5 — About.
+ *
+ * Hero (80vh, off-white) + 5 stacked sections:
+ *   01 The Associates
+ *   02 The Models
+ *   03 The Founder (full-bleed dark)
+ *   04 Our Properties (4-col IP grid)
+ *   05 The Team (asymmetric grid)
+ * ──────────────────────────────────────────────────────────── */
+
+function AboutHero() {
+  return (
+    <section
+      aria-label="About — A house of fashion, talent and craft"
+      className="relative flex min-h-[80vh] items-end bg-paper text-ink"
+    >
+      <div className="mx-auto w-full max-w-[1600px] px-6 pb-20 pt-32 sm:px-10 sm:pb-24 sm:pt-40 lg:px-14 lg:pb-32 lg:pt-48">
+        {/* Eyebrow */}
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: easeOutExpo }}
+          className="pbm-eyebrow mb-12"
+        >
+          Est. 1985 · Bengaluru · India
+        </motion.p>
+
+        <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:gap-x-12">
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: easeOutExpo, delay: 0.1 }}
+            className="pbm-display-l lg:col-span-8"
+          >
+            A house of
+            <br />
+            fashion, talent
+            <br />
+            and craft.
+          </motion.h1>
+
+          {/* Right-aligned manifesto */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.0, ease: easeOutExpo, delay: 0.4 }}
+            className="lg:col-span-4 lg:col-start-9 lg:pt-12"
+          >
+            <p className="pbm-body max-w-[36ch]">
+              Forty years of staging the runway, casting the face and
+              producing the show. One studio, two arms, a single editorial
+              eye on the country's craft and its talent.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Bottom hairline + scroll cue */}
+        <div className="mt-20 flex items-end justify-between border-t border-hairline pt-6 sm:mt-28 lg:mt-36">
+          <p className="pbm-meta-label">
+            The House — Associates · Models · Founder · Properties · Team
+          </p>
+          <span aria-hidden className="pbm-meta-label hidden sm:inline">
+            Scroll ↓
+          </span>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function About() {
   return (
-    <main className="min-h-screen flex items-center justify-center px-8">
-      <div className="text-center">
-        <p className="text-[11px] tracking-[0.2em] uppercase text-mute mb-6">
-          Phase 0 — Stub
-        </p>
-        <h1 className="font-display text-7xl md:text-9xl tracking-tight">About.</h1>
-        <p className="mt-8 text-mute text-sm tracking-[0.02em]">Five editorial sections arrive in Phase 7.</p>
-      </div>
+    <main className="bg-paper text-ink">
+      <AboutHero />
+      <AboutAssociates />
+      <AboutModels />
+      <AboutFounder />
+      <AboutProperties />
+      <AboutTeam />
     </main>
   )
 }

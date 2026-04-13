@@ -40,7 +40,7 @@ export default function ModelCard({
 
         {/* VIEW PORTFOLIO overlay */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:opacity-100 group-focus-visible:opacity-100">
-          <span className="relative inline-block px-1 text-[11px] uppercase tracking-[0.32em] text-paper">
+          <span className="pbm-eyebrow relative inline-block px-1 text-paper">
             View Portfolio
             <span className="absolute -bottom-1 left-0 right-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] delay-100 group-hover:scale-x-100 group-focus-visible:scale-x-100" />
           </span>
@@ -48,11 +48,11 @@ export default function ModelCard({
       </figure>
 
       <div className="mt-4 pb-2">
-        <h3 className="relative inline-block font-display text-[22px] font-light leading-none tracking-[-0.01em] text-ink sm:text-[24px]">
+        <h3 className="pbm-display-xs relative inline-block text-ink">
           {name}
           <span className="absolute -bottom-1 left-0 right-0 h-px origin-left scale-x-0 bg-gold transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100" />
         </h3>
-        <div className="mt-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-mute transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:text-ink">
+        <div className="pbm-meta-label mt-2 flex items-center gap-2 transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:text-ink">
           View
           <span
             aria-hidden

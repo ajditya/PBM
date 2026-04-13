@@ -74,25 +74,21 @@ export default function HomeAssociatesTeaser() {
             }}
             className="lg:col-span-5 lg:col-start-8"
           >
-            <motion.p
-              variants={fadeUp}
-              className="mb-10 text-[11px] tracking-[0.32em] uppercase text-gold"
-            >
-              02 / The Events
+            <motion.p variants={fadeUp} className="pbm-eyebrow mb-10">
+              01 / The Events
             </motion.p>
 
-            <motion.h2
-              variants={fadeUp}
-              className="font-display font-light text-[48px] leading-[0.95] tracking-[-0.01em] sm:text-[72px] lg:text-[96px]"
-            >
-              Where talent
+            <motion.h2 variants={fadeUp} className="pbm-display-l">
+              Prasad
               <br />
-              is discovered.
+              Bidapa
+              <br />
+              Associates
             </motion.h2>
 
             <motion.p
               variants={fadeUp}
-              className="mt-10 max-w-[40ch] text-[15px] leading-[1.7] text-ink/70"
+              className="pbm-body mt-10 max-w-[40ch]"
             >
               From the flagship Mega Model Hunt — twenty-two editions and
               counting — to fashion weeks across Mumbai, Colombo and

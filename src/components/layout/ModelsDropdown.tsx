@@ -43,27 +43,27 @@ export function ModelsDropdown({ onClose }: ModelsDropdownProps) {
             onClick={onClose}
             className="group block"
           >
-            <div className="aspect-[4/5] overflow-hidden bg-paper/5">
+            <div className="aspect-[5/7] overflow-hidden bg-paper/5">
               <img
                 src={womenPreview.img}
                 alt={womenPreview.name}
                 className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-[1.02]"
               />
             </div>
-            <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-gold">
+            <p className="pbm-meta-label mt-4 text-gold">
               Women — {femaleModels.length} Talents
             </p>
           </Link>
 
           <Link to="/models/male" onClick={onClose} className="group block">
-            <div className="aspect-[4/5] overflow-hidden bg-paper/5">
+            <div className="aspect-[5/7] overflow-hidden bg-paper/5">
               <img
                 src={menPreview.img}
                 alt={menPreview.name}
                 className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-[1.02]"
               />
             </div>
-            <p className="mt-4 text-[10px] uppercase tracking-[0.2em] text-gold">
+            <p className="pbm-meta-label mt-4 text-gold">
               Men — {maleModels.length} Talents
             </p>
           </Link>
@@ -74,7 +74,6 @@ export function ModelsDropdown({ onClose }: ModelsDropdownProps) {
           {[
             { to: "/models/female", label: "Women" },
             { to: "/models/male", label: "Men" },
-            { to: "/models", label: "New Faces" },
           ].map((link) => (
             <Link
               key={link.to + link.label}
@@ -82,7 +81,7 @@ export function ModelsDropdown({ onClose }: ModelsDropdownProps) {
               onClick={onClose}
               className="group inline-flex items-center gap-3 self-start"
             >
-              <span className="font-display text-[40px] leading-[1] tracking-[-0.01em] text-paper transition-colors duration-500 group-hover:text-gold">
+              <span className="pbm-display-s text-paper transition-colors duration-500 group-hover:text-gold">
                 {link.label}
               </span>
               <ArrowRight
@@ -95,16 +94,14 @@ export function ModelsDropdown({ onClose }: ModelsDropdownProps) {
 
         {/* ─── Cols 10–12: featured this month ─── */}
         <div className="col-span-3 col-start-10 flex flex-col">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-mute">
-            Featured This Month
-          </p>
+          <p className="pbm-meta-label">Featured This Month</p>
           <ul className="mt-6 space-y-4">
             {FEATURED.map((m) => (
               <li key={m.slug}>
                 <Link
                   to={`/models/${m.slug}`}
                   onClick={onClose}
-                  className="group inline-flex items-center justify-between gap-4 w-full text-[14px] text-paper transition-colors duration-300 hover:text-gold"
+                  className="pbm-meta-value group inline-flex items-center justify-between gap-4 w-full text-paper transition-colors duration-300 hover:text-gold"
                 >
                   <span>{m.name}</span>
                   <ArrowRight
@@ -122,7 +119,7 @@ export function ModelsDropdown({ onClose }: ModelsDropdownProps) {
           <Link
             to="/models"
             onClick={onClose}
-            className="group inline-flex items-center gap-3 text-[11px] uppercase tracking-[0.2em] text-paper hover:text-gold transition-colors duration-500"
+            className="pbm-ui group inline-flex items-center gap-3 text-paper hover:text-gold transition-colors duration-500"
           >
             View the Full Roster
             <ArrowRight

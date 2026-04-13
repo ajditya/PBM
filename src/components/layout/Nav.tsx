@@ -1,12 +1,14 @@
 import { useState } from "react"
 import { NavLink, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu } from "lucide-react"
+import { Menu, Search } from "lucide-react"
 
 import { useScrolled } from "@/hooks/useScrolled"
 import { easeOutExpo } from "@/lib/motion"
+import { brandLogos } from "@/lib/placeholder-assets"
 import { ModelsDropdown } from "@/components/layout/ModelsDropdown"
 import { MobileMenu } from "@/components/layout/MobileMenu"
+import SearchOverlay from "@/components/SearchOverlay"
 
 /* ────────────────────────────────────────────────────────────
  * Persistent top navigation.
@@ -37,16 +39,59 @@ const NAV_LINKS: readonly NavLinkSpec[] = [
   { to: "/contact", label: "Contact" },
 ]
 
-function StackedWordmark({ line1, line2 }: { line1: string; line2: string }) {
+/* Per-brand crop windows for the supplied 3200×3200 PNGs.
+ * Values come from sampling the actual content bounding box of each PNG.
+ * `pad` adds breathing room around the bbox before fitting it into the chip. */
+const LOGO_CROPS = {
+  associates: { x: 270, y: 1190, w: 2650, h: 870, pad: 80 },
+  models: { x: 670, y: 940, w: 1910, h: 1310, pad: 80 },
+} as const
+
+function BrandLogo({
+  src,
+  alt,
+  crop,
+  height,
+}: {
+  src: string
+  alt: string
+  crop: keyof typeof LOGO_CROPS
+  height: number
+}) {
+  const c = LOGO_CROPS[crop]
+  const cropX = c.x - c.pad
+  const cropY = c.y - c.pad
+  const cropW = c.w + c.pad * 2
+  const cropH = c.h + c.pad * 2
+  const aspect = cropW / cropH
+  const chipW = height * aspect
+  const scale = chipW / cropW
+  const scaledSize = 3200 * scale
+  const offsetX = -cropX * scale
+  const offsetY = -cropY * scale
+
   return (
-    <div className="flex flex-col items-start leading-[1.05] select-none">
-      <span className="font-display text-[13px] tracking-[0.18em] uppercase">
-        {line1}
-      </span>
-      <span className="text-[9px] tracking-[0.32em] uppercase text-mute mt-1">
-        {line2}
-      </span>
-    </div>
+    <span
+      className="relative block overflow-hidden"
+      style={{ width: chipW, height }}
+      aria-label={alt}
+    >
+      <img
+        src={src}
+        alt={alt}
+        draggable={false}
+        style={{
+          position: "absolute",
+          width: scaledSize,
+          height: scaledSize,
+          maxWidth: "none",
+          left: offsetX,
+          top: offsetY,
+          filter: "brightness(0) invert(1)",
+        }}
+        className="select-none"
+      />
+    </span>
   )
 }
 
@@ -68,7 +113,7 @@ function NavItem({
       onMouseEnter={onMouseEnter}
       className={({ isActive }) =>
         [
-          "group relative inline-flex h-8 items-center text-[11px] uppercase tracking-[0.2em] transition-colors duration-500",
+          "pbm-ui group relative inline-flex h-8 items-center transition-colors duration-500",
           isActive ? "text-gold" : "text-paper hover:text-paper",
         ].join(" ")
       }
@@ -100,6 +145,7 @@ export default function Nav() {
   const location = useLocation()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
 
   // The nav is only allowed to be transparent over the homepage hero.
   // Every other route renders the solid dark state from scroll position 0.
@@ -114,7 +160,7 @@ export default function Nav() {
       <motion.header
         initial={false}
         animate={{
-          height: solid ? 72 : 112,
+          height: solid ? 112 : 144,
           backgroundColor: solid ? "rgba(10,10,10,1)" : "rgba(10,10,10,0)",
         }}
         transition={{ duration: 0.6, ease: easeOutExpo }}
@@ -128,8 +174,13 @@ export default function Nav() {
         >
           <div className="mx-auto flex h-full max-w-[1600px] items-center justify-between gap-8 px-6 md:px-10 lg:px-14 text-paper">
             {/* ─── Left wordmark ─── */}
-            <NavLink to="/" className="shrink-0">
-              <StackedWordmark line1="Prasad Bidapa" line2="Associates" />
+            <NavLink to="/" className="shrink-0" aria-label="Prasad Bidapa Associates — Home">
+              <BrandLogo
+                src={brandLogos.associates}
+                alt="Prasad Bidapa Associates"
+                crop="associates"
+                height={56}
+              />
             </NavLink>
 
             {/* ─── Center link rail (desktop) ─── */}
@@ -152,20 +203,45 @@ export default function Nav() {
               ))}
             </nav>
 
-            {/* ─── Right wordmark (desktop) ─── */}
-            <NavLink to="/models" className="hidden lg:block shrink-0">
-              <StackedWordmark line1="Prasad Bidapa" line2="Models" />
-            </NavLink>
+            {/* ─── Right cluster — search icon + wordmark (desktop) ─── */}
+            <div className="hidden lg:flex shrink-0 items-center gap-6">
+              <button
+                type="button"
+                aria-label="Open search"
+                onClick={() => setSearchOpen(true)}
+                className="flex h-10 w-10 items-center justify-center text-paper transition-colors hover:text-gold"
+              >
+                <Search className="size-4" strokeWidth={1.5} />
+              </button>
+              <NavLink to="/models" aria-label="Prasad Bidapa Models">
+                <BrandLogo
+                  src={brandLogos.models}
+                  alt="Prasad Bidapa Models"
+                  crop="models"
+                  height={64}
+                />
+              </NavLink>
+            </div>
 
-            {/* ─── Mobile hamburger ─── */}
-            <button
-              type="button"
-              aria-label="Open menu"
-              onClick={() => setMobileOpen(true)}
-              className="lg:hidden inline-flex h-10 w-10 items-center justify-center text-paper"
-            >
-              <Menu className="size-5" strokeWidth={1.5} />
-            </button>
+            {/* ─── Mobile cluster — search + hamburger ─── */}
+            <div className="flex items-center gap-2 lg:hidden">
+              <button
+                type="button"
+                aria-label="Open search"
+                onClick={() => setSearchOpen(true)}
+                className="inline-flex h-10 w-10 items-center justify-center text-paper"
+              >
+                <Search className="size-5" strokeWidth={1.5} />
+              </button>
+              <button
+                type="button"
+                aria-label="Open menu"
+                onClick={() => setMobileOpen(true)}
+                className="inline-flex h-10 w-10 items-center justify-center text-paper"
+              >
+                <Menu className="size-5" strokeWidth={1.5} />
+              </button>
+            </div>
           </div>
 
           {/* ─── Models dropdown panel (desktop) ─── */}
@@ -179,6 +255,9 @@ export default function Nav() {
 
       {/* ─── Mobile menu sheet ─── */}
       <MobileMenu open={mobileOpen} onOpenChange={setMobileOpen} />
+
+      {/* ─── Search overlay (full-screen) ─── */}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   )
 }

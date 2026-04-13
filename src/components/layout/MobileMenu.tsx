@@ -32,7 +32,6 @@ const MENU = [
     children: [
       { to: "/models/female", label: "— Women" },
       { to: "/models/male", label: "— Men" },
-      { to: "/models", label: "— New Faces" },
     ],
   },
   { num: "03", to: "/events", label: "Events" },
@@ -96,11 +95,11 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                       onClick={!expandable ? close : undefined}
                       className="group inline-flex items-baseline gap-5"
                     >
-                      <span className="text-[10px] font-light tracking-[0.3em] text-gold">
+                      <span className="pbm-meta-label text-gold">
                         {item.num}
                       </span>
                       <span
-                        className={`font-display text-[36px] leading-[1] tracking-[-0.01em] transition-colors duration-300 ${
+                        className={`pbm-display-s transition-colors duration-300 ${
                           isActive ? "text-gold" : "text-paper group-hover:text-gold"
                         }`}
                       >
@@ -133,7 +132,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                           <Link
                             to={c.to}
                             onClick={close}
-                            className="text-[13px] uppercase tracking-[0.2em] text-mute hover:text-gold transition-colors duration-300"
+                            className="pbm-ui text-mute hover:text-gold transition-colors duration-300"
                           >
                             {c.label}
                           </Link>
@@ -149,15 +148,13 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
 
         {/* ─── Pinned bottom ─── */}
         <div className="border-t border-hairline-inverse px-10 py-8 flex flex-col gap-5">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-mute">
-            Follow
-          </p>
+          <p className="pbm-meta-label">Follow</p>
           <div className="flex flex-col gap-3">
             <a
               href="https://instagram.com"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-3 text-[13px] uppercase tracking-[0.2em] text-paper hover:text-gold transition-colors duration-300"
+              className="pbm-ui inline-flex items-center gap-3 text-paper hover:text-gold transition-colors duration-300"
             >
               Instagram <ArrowRight className="size-3.5" strokeWidth={1.5} />
             </a>
@@ -165,12 +162,12 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
               href="https://linkedin.com"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-3 text-[13px] uppercase tracking-[0.2em] text-paper hover:text-gold transition-colors duration-300"
+              className="pbm-ui inline-flex items-center gap-3 text-paper hover:text-gold transition-colors duration-300"
             >
               LinkedIn <ArrowRight className="size-3.5" strokeWidth={1.5} />
             </a>
           </div>
-          <p className="mt-4 text-[10px] uppercase tracking-[0.3em] text-mute">
+          <p className="pbm-meta-label mt-4">
             Bengaluru &middot; Mumbai &middot; Delhi
           </p>
         </div>

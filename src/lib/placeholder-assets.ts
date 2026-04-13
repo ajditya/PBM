@@ -13,11 +13,8 @@ const u = (id: string, w = 1600, h?: number) =>
 
 /* ───────── Hero video ───────── */
 export const heroVideo = {
-  /** Pexels stock — runway / fashion catwalk loop. Update when real footage arrives.
-   *  Note: pexels.com video-files endpoint is hotlink-protected; the <video> tag
-   *  will fall back to the poster image if blocked, which is the intended behaviour
-   *  during the placeholder phase. */
-  src: "https://videos.pexels.com/video-files/4715117/4715117-hd_1920_1080_25fps.mp4",
+  /** Self-hosted Mega Model Hunt rampwalk footage. */
+  src: "/videos/hero-rampwalk.mp4",
   poster:
     "https://images.pexels.com/photos/2613260/pexels-photo-2613260.jpeg?auto=compress&cs=tinysrgb&w=2000",
 }
@@ -193,8 +190,8 @@ export const editorial = [
   u("photo-1521498542256-5aeb47ba2b36", 1600),
 ]
 
-/* ───────── Founder portrait (Prasad Bidapa placeholder — B&W feel) ───────── */
-export const founderPortrait = u("photo-1507003211169-0a1dd7228f2d", 1200, 1600)
+/* ───────── Founder portrait — real photo of Prasad Bidapa ───────── */
+export const founderPortrait = "/images/founder/prasad-01.jpg"
 
 /* ───────── Events ───────── */
 export const events = [
@@ -276,4 +273,97 @@ export const pastDiscoveries = [
   { name: "Deepika Padukone", img: u("photo-1488161628813-04466f872be2", 800, 1000) },
   { name: "Anushka Sharma", img: u("photo-1494790108377-be9c29b29330", 800, 1000) },
   { name: "Lara Dutta", img: u("photo-1521577352947-9bb58764b69a", 800, 1000) },
+] as const
+
+/* ───────── Properties / IPs (used on About Section 4) ─────────
+ * Mirrors the events list but adds the editorial taglines + year
+ * established that the About-page card spec needs. */
+export const properties = [
+  {
+    slug: "mega-model-hunt",
+    title: "Mega Model Hunt",
+    tagline: "India's longest-running supermodel discovery platform.",
+    year: "EST. 2002",
+    cover: u("photo-1469334031218-e382a71b716b", 1200, 1500),
+  },
+  {
+    slug: "india-mens-fashion-week",
+    title: "India Men's Fashion Week",
+    tagline: "The country's first dedicated menswear runway.",
+    year: "EST. 2009",
+    cover: u("photo-1539109136881-3be0616acf4b", 1200, 1500),
+  },
+  {
+    slug: "colombo-fashion-week",
+    title: "Colombo Fashion Week",
+    tagline: "South Asia's regional fashion summit.",
+    year: "EST. 2003",
+    cover: u("photo-1496747611176-843222e1e57c", 1200, 1500),
+  },
+  {
+    slug: "rajasthan-heritage-week",
+    title: "Rajasthan Heritage Week",
+    tagline: "A celebration of artisanal craft and royal textile.",
+    year: "EST. 2014",
+    cover: u("photo-1581338834647-b0fb40704e21", 1200, 1500),
+  },
+  {
+    slug: "luxo-luxury-weeks",
+    title: "LUXO Luxury Weeks",
+    tagline: "A curated luxury runway across India's metros.",
+    year: "EST. 2017",
+    cover: u("photo-1542295669297-4d352b042bca", 1200, 1500),
+  },
+  {
+    slug: "kingfisher-fashion-awards",
+    title: "Kingfisher Fashion Awards",
+    tagline: "Honouring two decades of Indian fashion excellence.",
+    year: "EST. 2003",
+    cover: u("photo-1490481651871-ab68de25d43d", 1200, 1500),
+  },
+] as const
+
+/* ───────── Team members (used on About Section 5) ─────────
+ * Eight placeholder portraits. Names fictional, roles real. */
+export const teamMembers = [
+  { name: "Tara D'Souza",       role: "Director · Models",      img: u("photo-1531123897727-8f129e1688ce", 800, 1000) },
+  { name: "Vikram Joshi",       role: "Director · Events",      img: u("photo-1500648767791-00dcc994a43e", 800, 1000) },
+  { name: "Anaya Reddy",        role: "Head of Bookings",       img: u("photo-1544005313-94ddf0286df2", 800, 1000) },
+  { name: "Karan Mehta",        role: "Production Lead",        img: u("photo-1506794778202-cad84cf45f1d", 800, 1000) },
+  { name: "Ishita Banerjee",    role: "Talent Scout",           img: u("photo-1438761681033-6461ffad8d80", 800, 1000) },
+  { name: "Aman Kapoor",        role: "Creative Direction",     img: u("photo-1507003211169-0a1dd7228f2d", 800, 1000) },
+  { name: "Sneha Iyer",         role: "Communications",         img: u("photo-1487412720507-e7ab37603c6f", 800, 1000) },
+  { name: "Rohit Verma",        role: "Studio Manager",         img: u("photo-1492562080023-ab3db95bfbce", 800, 1000) },
+] as const
+
+/* ───────── About-page services lists ───────── */
+export const associatesServices = [
+  "Fashion Week Production",
+  "Talent Hunt Shows",
+  "Brand Partnerships",
+  "Government & Tourism",
+  "Editorial Direction",
+  "Heritage Programming",
+] as const
+
+export const modelsServices = [
+  "Mainboard Bookings",
+  "Editorial Castings",
+  "Runway & Lookbook",
+  "Brand Campaigns",
+  "Development Roster",
+  "Digital & Influencer",
+] as const
+
+/* ───────── About-page Associates / Models stacked photo trios ───────── */
+export const aboutAssociatesPhotos = [
+  u("photo-1469334031218-e382a71b716b", 1000, 1250),
+  u("photo-1542295669297-4d352b042bca", 1000, 1250),
+  u("photo-1581338834647-b0fb40704e21", 1000, 1250),
+] as const
+
+export const aboutModelsPhotos = [
+  u("photo-1496747611176-843222e1e57c", 1000, 1250),
+  u("photo-1490481651871-ab68de25d43d", 1000, 1250),
+  u("photo-1539109136881-3be0616acf4b", 1000, 1250),
 ] as const

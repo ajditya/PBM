@@ -36,27 +36,21 @@ export default function HomeModelsTeaser() {
             }}
             className="lg:col-span-5"
           >
-            <motion.p
-              variants={fadeUp}
-              className="mb-10 text-[11px] tracking-[0.32em] uppercase text-gold"
-            >
-              01 / The Agency
+            <motion.p variants={fadeUp} className="pbm-eyebrow mb-10">
+              02 / The Agency
             </motion.p>
 
-            <motion.h2
-              variants={fadeUp}
-              className="font-display font-light text-[48px] leading-[0.95] tracking-[-0.01em] sm:text-[72px] lg:text-[96px]"
-            >
-              The faces
+            <motion.h2 variants={fadeUp} className="pbm-display-l">
+              Prasad
               <br />
-              behind the
+              Bidapa
               <br />
-              brands.
+              Models
             </motion.h2>
 
             <motion.p
               variants={fadeUp}
-              className="mt-10 max-w-[40ch] text-[15px] leading-[1.7] text-paper/70"
+              className="pbm-body-inverse mt-10 max-w-[40ch]"
             >
               A roster shaped by four decades of taste — main board talent,
               new faces, and the next generation of mainboard supermodels,

@@ -3,6 +3,8 @@ import { Outlet } from "react-router-dom"
 import Nav from "@/components/layout/Nav"
 import Footer from "@/components/layout/Footer"
 import PageTransition from "@/components/layout/PageTransition"
+import CookieBanner from "@/components/CookieBanner"
+import { ToastViewport } from "@/components/Toast"
 
 export default function Layout() {
   return (
@@ -11,6 +13,8 @@ export default function Layout() {
       <Outlet />
       <Footer />
       <PageTransition />
+      <CookieBanner />
+      <ToastViewport />
     </div>
   )
 }

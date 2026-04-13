@@ -46,16 +46,10 @@ export default function HomeEventsScroll() {
           }}
           className="mb-16 lg:mb-20"
         >
-          <motion.p
-            variants={fadeUp}
-            className="mb-6 text-[11px] tracking-[0.32em] uppercase text-gold"
-          >
+          <motion.p variants={fadeUp} className="pbm-eyebrow mb-6">
             03 / The Calendar
           </motion.p>
-          <motion.h2
-            variants={fadeUp}
-            className="font-display font-light text-[40px] leading-[0.95] tracking-[-0.01em] sm:text-[48px] lg:text-[56px]"
-          >
+          <motion.h2 variants={fadeUp} className="pbm-display-m">
             Upcoming &amp; recent.
           </motion.h2>
         </motion.div>

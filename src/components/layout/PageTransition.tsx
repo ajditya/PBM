@@ -23,7 +23,7 @@ export default function PageTransition() {
       initial={{ y: 0 }}
       animate={{ y: "-100%" }}
       transition={{ duration: 0.9, delay: 0.35, ease: easeOutExpo }}
-      className="pointer-events-none fixed inset-0 z-[100] bg-ink will-change-transform"
+      className="pointer-events-none fixed inset-0 z-[40] bg-ink will-change-transform"
       aria-hidden
     >
       <div className="flex h-full w-full items-center justify-center">
@@ -33,9 +33,7 @@ export default function PageTransition() {
           transition={{ duration: 0.5, ease: easeOutExpo }}
           className="flex flex-col items-center gap-6"
         >
-          <span className="font-display italic font-light text-[88px] leading-none text-paper">
-            PB.
-          </span>
+          <span className="pbm-display-l italic text-paper">PB.</span>
           <motion.span
             aria-hidden
             initial={{ scaleX: 0 }}
@@ -43,9 +41,7 @@ export default function PageTransition() {
             transition={{ duration: 0.7, ease: easeOutExpo }}
             className="block h-px w-40 bg-gold origin-left"
           />
-          <span className="text-[10px] uppercase tracking-[0.3em] text-mute">
-            Loading
-          </span>
+          <span className="pbm-meta-label">Loading</span>
         </motion.div>
       </div>
     </motion.div>

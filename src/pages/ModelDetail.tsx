@@ -45,12 +45,8 @@ export default function ModelDetail() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-paper px-8 text-ink">
         <div className="text-center">
-          <p className="mb-6 text-[11px] uppercase tracking-[0.32em] text-mute">
-            Model not found
-          </p>
-          <h1 className="font-display text-6xl font-light tracking-tight">
-            That talent is off-roster.
-          </h1>
+          <p className="pbm-eyebrow-mute mb-6">Model not found</p>
+          <h1 className="pbm-display-m">That talent is off-roster.</h1>
           <Link
             to="/models/female"
             className="pbm-link mt-12 inline-flex text-ink"
@@ -68,18 +64,18 @@ export default function ModelDetail() {
 
   return (
     <main className="bg-paper text-ink">
-      {/* ─── Hero — 60/40 split ─── */}
+      {/* ─── Hero — compact two-column ─── */}
       <section
         aria-label={`${model.name} — overview`}
-        className="relative w-full"
+        className="relative w-full pt-[144px] pb-16 sm:pt-[160px] sm:pb-20 lg:pt-[176px] lg:pb-24"
       >
-        <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-12">
-          {/* ── Left 60% — full-bleed portrait ── */}
+        <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-12 px-6 sm:px-10 lg:grid-cols-12 lg:gap-16 lg:px-14">
+          {/* ── Portrait — constrained, matches 5:7 source aspect ── */}
           <motion.figure
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.4, ease: easeOutExpo }}
-            className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5 lg:col-span-7 lg:aspect-auto lg:h-screen"
+            className="relative mx-auto aspect-[5/7] w-full max-w-[380px] overflow-hidden bg-ink/5 lg:col-span-5 lg:max-w-none"
           >
             <motion.img
               initial={{ scale: 1.04 }}
@@ -91,18 +87,18 @@ export default function ModelDetail() {
             />
           </motion.figure>
 
-          {/* ── Right 40% — meta panel ── */}
+          {/* ── Meta panel ── */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, ease: easeOutExpo, delay: 0.15 }}
-            className="flex flex-col justify-center bg-paper px-6 py-20 sm:px-12 sm:py-24 lg:col-span-5 lg:px-14 lg:py-32 xl:px-20"
+            className="flex flex-col lg:col-span-7 lg:pt-6"
           >
-            <p className="mb-10 text-[11px] uppercase tracking-[0.32em] text-mute">
+            <p className="pbm-eyebrow-mute mb-10">
               {gender} · {model.stats.board}
             </p>
 
-            <h1 className="font-display font-light leading-[0.9] tracking-[-0.02em] text-[64px] sm:text-[80px] lg:text-[88px]">
+            <h1 className="pbm-display-m">
               {first}
               {last && (
                 <>
@@ -125,12 +121,8 @@ export default function ModelDetail() {
                   key={label}
                   className="flex items-baseline justify-between gap-4 border-b border-hairline pb-3"
                 >
-                  <dt className="text-[10px] uppercase tracking-[0.32em] text-mute">
-                    {label}
-                  </dt>
-                  <dd className="text-[14px] tracking-[0.02em] text-ink">
-                    {model.stats[key]}
-                  </dd>
+                  <dt className="pbm-meta-label">{label}</dt>
+                  <dd className="pbm-meta-value">{model.stats[key]}</dd>
                 </div>
               ))}
             </dl>

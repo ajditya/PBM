@@ -66,16 +66,13 @@ export default function HomeHero() {
         className="absolute inset-x-0 bottom-0 px-6 pb-16 sm:px-10 sm:pb-20 lg:px-14 lg:pb-24"
       >
         <div className="max-w-[1600px] mx-auto">
-          <motion.p
-            variants={headlineChild}
-            className="mb-6 text-[11px] tracking-[0.32em] uppercase text-gold"
-          >
+          <motion.p variants={headlineChild} className="pbm-eyebrow mb-6">
             Est. 1985 · Bengaluru
           </motion.p>
 
           <motion.h1
             variants={headlineChild}
-            className="font-display font-light text-paper text-[56px] leading-[0.95] tracking-[-0.02em] sm:text-[88px] md:text-[112px] lg:text-[140px]"
+            className="pbm-display-xl text-paper"
           >
             Faces that
             <br />
@@ -101,9 +98,7 @@ export default function HomeHero() {
         transition={{ duration: 1.2, ease: easeOutExpo, delay: 1.2 }}
         className="absolute bottom-16 right-6 hidden flex-col items-center gap-4 sm:right-10 lg:right-14 md:flex"
       >
-        <span
-          className="text-[10px] tracking-[0.4em] uppercase text-paper [writing-mode:vertical-rl] rotate-180"
-        >
+        <span className="pbm-meta-label text-paper [writing-mode:vertical-rl] rotate-180">
           Scroll
         </span>
         <span aria-hidden className="relative block h-16 w-px overflow-hidden bg-paper/20">

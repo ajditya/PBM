@@ -1,6 +1,7 @@
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { motion } from "framer-motion"
 
+import Lightbox from "@/components/Lightbox"
 import { modelGalleryPool } from "@/lib/placeholder-assets"
 import { easeOutExpo } from "@/lib/motion"
 
@@ -73,6 +74,7 @@ interface TileProps {
   alt?: string
   className?: string
   delay?: number
+  onOpen?: () => void
 }
 
 function Tile({
@@ -80,6 +82,7 @@ function Tile({
   alt = "Editorial portrait",
   className = "",
   delay = 0,
+  onOpen,
 }: TileProps) {
   return (
     <motion.figure
@@ -90,6 +93,7 @@ function Tile({
     >
       <button
         type="button"
+        onClick={onOpen}
         className="absolute inset-0 block h-full w-full cursor-zoom-in focus:outline-none"
         aria-label="View image"
       >
@@ -105,44 +109,67 @@ function Tile({
 
 interface BlockProps {
   block: Block
+  startIndex: number
+  onOpen: (i: number) => void
 }
 
-function HeroBlock({ block }: BlockProps) {
-  return <Tile src={block.images[0]} className="aspect-[4/5] w-full" />
-}
-
-function TwoUpBlock({ block }: BlockProps) {
-  return (
-    <div
-      className="grid grid-cols-1 sm:grid-cols-2"
-      style={{ gap: GAP }}
-    >
-      {block.images.map((src, i) => (
-        <Tile key={src + i} src={src} className="aspect-[3/4]" delay={i * 0.05} />
-      ))}
-    </div>
-  )
-}
-
-function CenteredBlock({ block }: BlockProps) {
+function HeroBlock({ block, startIndex, onOpen }: BlockProps) {
   return (
     <div className="flex justify-center">
       <Tile
         src={block.images[0]}
-        className="aspect-[4/5] w-full sm:w-[70%] lg:w-[60%]"
+        className="aspect-[5/7] w-full sm:w-[55%] lg:w-[42%]"
+        onOpen={() => onOpen(startIndex)}
       />
     </div>
   )
 }
 
-function ThreeUpBlock({ block }: BlockProps) {
+function TwoUpBlock({ block, startIndex, onOpen }: BlockProps) {
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-3"
+      className="mx-auto grid w-full max-w-[70%] grid-cols-1 sm:grid-cols-2"
       style={{ gap: GAP }}
     >
       {block.images.map((src, i) => (
-        <Tile key={src + i} src={src} className="aspect-[3/4]" delay={i * 0.05} />
+        <Tile
+          key={src + i}
+          src={src}
+          className="aspect-[5/7]"
+          delay={i * 0.05}
+          onOpen={() => onOpen(startIndex + i)}
+        />
+      ))}
+    </div>
+  )
+}
+
+function CenteredBlock({ block, startIndex, onOpen }: BlockProps) {
+  return (
+    <div className="flex justify-center">
+      <Tile
+        src={block.images[0]}
+        className="aspect-[5/7] w-full sm:w-[45%] lg:w-[32%]"
+        onOpen={() => onOpen(startIndex)}
+      />
+    </div>
+  )
+}
+
+function ThreeUpBlock({ block, startIndex, onOpen }: BlockProps) {
+  return (
+    <div
+      className="mx-auto grid w-full max-w-[85%] grid-cols-1 sm:grid-cols-3"
+      style={{ gap: GAP }}
+    >
+      {block.images.map((src, i) => (
+        <Tile
+          key={src + i}
+          src={src}
+          className="aspect-[5/7]"
+          delay={i * 0.05}
+          onOpen={() => onOpen(startIndex + i)}
+        />
       ))}
     </div>
   )
@@ -163,6 +190,18 @@ interface Props {
 export default function EditorialGallery({ pool }: Props) {
   const source = pool && pool.length > 0 ? pool : modelGalleryPool
   const layout = useMemo(() => buildLayout(source), [source])
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+
+  // Pre-compute starting flat indices per block for the lightbox
+  const startIndices = useMemo(() => {
+    const out: number[] = []
+    let cursor = 0
+    for (const b of layout) {
+      out.push(cursor)
+      cursor += b.images.length
+    }
+    return out
+  }, [layout])
 
   return (
     <section
@@ -175,9 +214,24 @@ export default function EditorialGallery({ pool }: Props) {
       >
         {layout.map((block, i) => {
           const Renderer = RENDERERS[block.type]
-          return <Renderer key={`${block.type}-${i}`} block={block} />
+          return (
+            <Renderer
+              key={`${block.type}-${i}`}
+              block={block}
+              startIndex={startIndices[i]}
+              onOpen={(idx) => setLightboxIndex(idx)}
+            />
+          )
         })}
       </div>
+
+      <Lightbox
+        open={lightboxIndex !== null}
+        images={source}
+        index={lightboxIndex ?? 0}
+        onIndexChange={(i) => setLightboxIndex(i)}
+        onClose={() => setLightboxIndex(null)}
+      />
     </section>
   )
 }

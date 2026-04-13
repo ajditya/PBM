@@ -29,13 +29,9 @@ const WORK_LINKS = [
 
 function Wordmark() {
   return (
-    <Link to="/" className="inline-flex flex-col leading-[0.95]">
-      <span className="font-display text-[44px] md:text-[56px] tracking-[-0.01em] text-paper">
-        Prasad
-      </span>
-      <span className="font-display text-[44px] md:text-[56px] tracking-[-0.01em] text-paper">
-        Bidapa.
-      </span>
+    <Link to="/" className="pbm-display-m inline-flex flex-col text-paper">
+      <span>Prasad</span>
+      <span>Bidapa.</span>
     </Link>
   )
 }
@@ -43,8 +39,8 @@ function Wordmark() {
 function StudioAddress() {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[10px] uppercase tracking-[0.3em] text-gold">Studio</p>
-      <p className="text-[13px] leading-[1.7] text-paper">
+      <p className="pbm-eyebrow">Studio</p>
+      <p className="pbm-body-inverse">
         23, 1st Cross Road
         <br />
         Yelahanka New Town
@@ -62,16 +58,14 @@ function NewsletterForm() {
       onSubmit={(e) => e.preventDefault()}
       className="flex flex-col gap-4"
     >
-      <p className="text-[10px] uppercase tracking-[0.3em] text-mute">
-        Stay In Touch
-      </p>
+      <p className="pbm-meta-label">Stay In Touch</p>
       <div className="flex items-end gap-3 border-b border-hairline-inverse focus-within:border-gold transition-colors duration-500">
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
-          className="flex-1 bg-transparent border-0 outline-none py-3 text-[14px] text-paper placeholder:text-paper/40"
+          className="pbm-meta-value flex-1 bg-transparent border-0 outline-none py-3 text-paper placeholder:text-paper/40"
           aria-label="Email address"
         />
         <button
@@ -95,15 +89,13 @@ function NavColumn({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <p className="text-[10px] uppercase tracking-[0.3em] text-mute">
-        {label}
-      </p>
+      <p className="pbm-meta-label">{label}</p>
       <ul className="flex flex-col gap-3">
         {links.map((l) => (
           <li key={l.to + l.label}>
             <Link
               to={l.to}
-              className="text-[13px] uppercase tracking-[0.2em] text-paper hover:text-gold transition-colors duration-300"
+              className="pbm-ui text-paper hover:text-gold transition-colors duration-300"
             >
               {l.label}
             </Link>
@@ -117,13 +109,13 @@ function NavColumn({
 function SocialLinks() {
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-[10px] uppercase tracking-[0.3em] text-mute">Follow</p>
+      <p className="pbm-meta-label">Follow</p>
       <div className="flex flex-col gap-3">
         <a
           href="https://instagram.com"
           target="_blank"
           rel="noreferrer"
-          className="group inline-flex items-center gap-3 text-[13px] uppercase tracking-[0.2em] text-paper hover:text-gold transition-colors duration-300"
+          className="pbm-ui group inline-flex items-center gap-3 text-paper hover:text-gold transition-colors duration-300"
         >
           Instagram
           <ArrowRight
@@ -135,7 +127,7 @@ function SocialLinks() {
           href="https://linkedin.com"
           target="_blank"
           rel="noreferrer"
-          className="group inline-flex items-center gap-3 text-[13px] uppercase tracking-[0.2em] text-paper hover:text-gold transition-colors duration-300"
+          className="pbm-ui group inline-flex items-center gap-3 text-paper hover:text-gold transition-colors duration-300"
         >
           LinkedIn
           <ArrowRight
@@ -182,10 +174,10 @@ export default function Footer() {
 
           {/* Bottom hairline row */}
           <div className="mt-20 pt-8 border-t border-hairline-inverse flex items-center justify-between">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-mute">
+            <p className="pbm-meta-label">
               &copy; 2026 Prasad Bidapa. All rights reserved.
             </p>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-mute">
+            <p className="pbm-meta-label">
               Crafted in Bengaluru
             </p>
           </div>
@@ -210,7 +202,7 @@ export default function Footer() {
               <li key={l.to + l.label}>
                 <Link
                   to={l.to}
-                  className="text-[13px] uppercase tracking-[0.2em] text-paper hover:text-gold transition-colors duration-300"
+                  className="pbm-ui text-paper hover:text-gold transition-colors duration-300"
                 >
                   {l.label}
                 </Link>
@@ -224,10 +216,10 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-hairline-inverse flex items-center justify-between">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-mute">
+          <p className="pbm-meta-label">
             &copy; 2026
           </p>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-mute">
+          <p className="pbm-meta-label">
             Bengaluru
           </p>
         </div>

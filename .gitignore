@@ -32,8 +32,19 @@ Logo/
 # Source model photo masters — deployed copies live in public/images/models/
 Model Photos/
 
+# Source founder portrait master — deployed copy is public/images/founder/
+Prasad Bidappa/
+
+# Source hero rampwalk video master — deployed copy is public/videos/
+hero/
+
 # Playwright MCP screenshots and snapshots
 .playwright-mcp/
+
+# Session screenshot artifacts
+verify-*.png
+verify-*.jpeg
+phase*.png
 
 # Local environment
 .env

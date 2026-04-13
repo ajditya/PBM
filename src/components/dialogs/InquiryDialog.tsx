@@ -38,10 +38,7 @@ interface FieldProps {
 function Field({ id, label, type = "text", textarea = false, disabled }: FieldProps) {
   return (
     <div className="flex flex-col">
-      <label
-        htmlFor={id}
-        className="mb-2 text-[10px] uppercase tracking-[0.32em] text-mute"
-      >
+      <label htmlFor={id} className="pbm-meta-label mb-2">
         {label}
       </label>
       {textarea ? (
@@ -49,14 +46,14 @@ function Field({ id, label, type = "text", textarea = false, disabled }: FieldPr
           id={id}
           rows={3}
           disabled={disabled}
-          className="resize-none border-0 border-b border-ink bg-transparent py-2 text-[14px] tracking-[0.02em] text-ink outline-none placeholder:text-mute/50 focus:border-gold disabled:cursor-not-allowed"
+          className="pbm-meta-value resize-none border-0 border-b border-ink bg-transparent py-2 outline-none placeholder:text-mute/50 focus:border-gold disabled:cursor-not-allowed"
         />
       ) : (
         <input
           id={id}
           type={type}
           disabled={disabled}
-          className="border-0 border-b border-ink bg-transparent py-2 text-[14px] tracking-[0.02em] text-ink outline-none placeholder:text-mute/50 focus:border-gold disabled:cursor-not-allowed"
+          className="pbm-meta-value border-0 border-b border-ink bg-transparent py-2 outline-none placeholder:text-mute/50 focus:border-gold disabled:cursor-not-allowed"
         />
       )}
     </div>
@@ -187,7 +184,7 @@ function InquiryDialogInner({
                     ease: easeOutExpo,
                     delay: 0.2,
                   }}
-                  className="mt-8 font-display text-[36px] font-light leading-[1.05] tracking-[-0.01em]"
+                  className="pbm-display-s mt-8"
                 >
                   Inquiry sent.
                 </motion.h2>
@@ -199,7 +196,7 @@ function InquiryDialogInner({
                     ease: easeOutExpo,
                     delay: 0.35,
                   }}
-                  className="mt-6 max-w-[34ch] text-[14px] leading-[1.7] text-mute"
+                  className="pbm-body mt-6 max-w-[34ch] text-mute"
                 >
                   Our team will respond within 24 hours regarding {modelName}'s
                   availability.
@@ -215,20 +212,15 @@ function InquiryDialogInner({
             ) : (
               /* ─── C1 / C2 / C4 — Form ─── */
               <>
-                <h2
-                  id="inquiry-heading"
-                  className="font-display text-[26px] font-light leading-[1.1] tracking-[-0.01em] sm:text-[28px]"
-                >
+                <h2 id="inquiry-heading" className="pbm-display-s">
                   Inquire about {modelName}
                 </h2>
-                <p className="mt-3 text-[10px] uppercase tracking-[0.32em] text-mute">
-                  Booking enquiry
-                </p>
+                <p className="pbm-meta-label mt-3">Booking enquiry</p>
 
                 {/* C4 error strip */}
                 {state === "error" && (
                   <div className="mt-8 flex items-start justify-between gap-4 border-t border-b border-error/60 py-3 pl-4 pr-2">
-                    <p className="text-[13px] leading-[1.6] text-error">
+                    <p className="pbm-body text-error">
                       Something went wrong. Please try again or email{" "}
                       <a
                         href="mailto:bookings@prasadbidapa.com"
