@@ -32,37 +32,153 @@ export const runwayShots = [
   u("photo-1581338834647-b0fb40704e21"),
 ]
 
+export type Board = "Mainboard" | "New Faces" | "Development" | "Digital"
+
+export interface ModelStats {
+  height: string
+  bust: string
+  waist: string
+  hips: string
+  hair: string
+  eyes: string
+  shoes: string
+  location: string
+  board: Board
+}
+
+export interface Model {
+  slug: string
+  name: string
+  img: string
+  stats: ModelStats
+  /** Optional real-photo gallery. When present, the Model Detail page
+   * renders these instead of falling back to the shared editorial pool. */
+  gallery?: readonly string[]
+}
+
+/** Build an array of `/images/models/{slug}/{1..n}.png` paths. */
+const localGallery = (slug: string, count: number): readonly string[] =>
+  Array.from({ length: count }, (_, i) => `/images/models/${slug}/${i + 1}.png`)
+
+const wStats = (
+  height: number,
+  bust: number,
+  waist: number,
+  hips: number,
+  hair: string,
+  eyes: string,
+  shoes: number,
+  location: string,
+  board: Board,
+): ModelStats => ({
+  height: `${height} cm`,
+  bust: `${bust}`,
+  waist: `${waist}`,
+  hips: `${hips}`,
+  hair,
+  eyes,
+  shoes: `${shoes}`,
+  location,
+  board,
+})
+
+const mStats = (
+  height: number,
+  chest: number,
+  waist: number,
+  hips: number,
+  hair: string,
+  eyes: string,
+  shoes: number,
+  location: string,
+  board: Board,
+): ModelStats => ({
+  height: `${height} cm`,
+  bust: `${chest}`,
+  waist: `${waist}`,
+  hips: `${hips}`,
+  hair,
+  eyes,
+  shoes: `${shoes}`,
+  location,
+  board,
+})
+
 /* ───────── Female model portraits (women board) ─────────
- * All slugs verified against Unsplash photo pages — editorial
- * portraits only, no kids/groups/objects. */
-export const femaleModels = [
-  { slug: "ananya-v", name: "Ananya V.", img: u("photo-1574015974293-817f0ebebb74", 1200, 1500) },
-  { slug: "ishani-d", name: "Ishani D.", img: u("photo-1580478491436-fd6a937acc9e", 1200, 1500) },
-  { slug: "meher-r", name: "Meher R.", img: u("photo-1538329972958-465d6d2144ed", 1200, 1500) },
-  { slug: "priya-k", name: "Priya K.", img: u("photo-1645561305502-63a9ba09ab09", 1200, 1500) },
-  { slug: "zara-shah", name: "Zara Shah", img: u("photo-1613915617430-8ab0fd7c6baf", 1200, 1500) },
-  { slug: "elena-gupta", name: "Elena Gupta", img: u("photo-1524504388940-b1c1722653e1", 1200, 1500) },
-  { slug: "aisha-khanna", name: "Aisha Khanna", img: u("photo-1562572159-4efc207f5aff", 1200, 1500) },
-  { slug: "neha-r", name: "Neha R.", img: u("photo-1531746020798-e6953c6e8e04", 1200, 1500) },
-  { slug: "isha-mehra", name: "Isha Mehra", img: u("photo-1526510747491-58f928ec870f", 1200, 1500) },
-  { slug: "tara-singh", name: "Tara Singh", img: u("photo-1564485377539-4af72d1f6a2f", 1200, 1500) },
-  { slug: "maya-iyer", name: "Maya Iyer", img: u("photo-1529626455594-4ff0802cfb7e", 1200, 1500) },
-  { slug: "kavya-n", name: "Kavya N.", img: u("photo-1541519481457-763224276691", 1200, 1500) },
-] as const
+ * Real photos for the on-roster talents we have shoots for; the
+ * remaining cards still use verified Unsplash editorial slugs. */
+export const femaleModels: readonly Model[] = [
+  {
+    slug: "amber",
+    name: "Amber",
+    img: "/images/models/amber/1.png",
+    gallery: localGallery("amber", 17),
+    stats: wStats(176, 82, 60, 88, "Black", "Brown", 38, "Bengaluru", "Mainboard"),
+  },
+  { slug: "ananya-v", name: "Ananya V.", img: u("photo-1574015974293-817f0ebebb74", 1200, 1500), stats: wStats(178, 84, 60, 89, "Black", "Brown", 39, "Bengaluru", "Mainboard") },
+  { slug: "ishani-d", name: "Ishani D.", img: u("photo-1580478491436-fd6a937acc9e", 1200, 1500), stats: wStats(176, 82, 59, 88, "Brown", "Hazel", 38, "Mumbai", "Mainboard") },
+  { slug: "meher-r", name: "Meher R.", img: u("photo-1538329972958-465d6d2144ed", 1200, 1500), stats: wStats(180, 83, 61, 90, "Dark Brown", "Brown", 40, "Delhi", "Mainboard") },
+  { slug: "priya-k", name: "Priya K.", img: u("photo-1645561305502-63a9ba09ab09", 1200, 1500), stats: wStats(179, 84, 60, 89, "Black", "Brown", 39, "Bengaluru", "Mainboard") },
+  { slug: "zara-shah", name: "Zara Shah", img: u("photo-1613915617430-8ab0fd7c6baf", 1200, 1500), stats: wStats(177, 81, 58, 87, "Black", "Green", 38, "Mumbai", "Mainboard") },
+  { slug: "elena-gupta", name: "Elena Gupta", img: u("photo-1524504388940-b1c1722653e1", 1200, 1500), stats: wStats(174, 82, 60, 88, "Blonde", "Blue", 38, "Goa", "New Faces") },
+  { slug: "aisha-khanna", name: "Aisha Khanna", img: u("photo-1562572159-4efc207f5aff", 1200, 1500), stats: wStats(178, 84, 60, 89, "Black", "Brown", 39, "Bengaluru", "Mainboard") },
+  { slug: "neha-r", name: "Neha R.", img: u("photo-1531746020798-e6953c6e8e04", 1200, 1500), stats: wStats(173, 80, 58, 86, "Brown", "Brown", 37, "Pune", "New Faces") },
+  { slug: "isha-mehra", name: "Isha Mehra", img: u("photo-1526510747491-58f928ec870f", 1200, 1500), stats: wStats(175, 82, 59, 87, "Auburn", "Green", 38, "Delhi", "Development") },
+  { slug: "tara-singh", name: "Tara Singh", img: u("photo-1564485377539-4af72d1f6a2f", 1200, 1500), stats: wStats(180, 84, 61, 90, "Brown", "Brown", 40, "Chandigarh", "Mainboard") },
+  { slug: "maya-iyer", name: "Maya Iyer", img: u("photo-1529626455594-4ff0802cfb7e", 1200, 1500), stats: wStats(176, 82, 60, 88, "Black", "Brown", 38, "Chennai", "Development") },
+  { slug: "kavya-n", name: "Kavya N.", img: u("photo-1541519481457-763224276691", 1200, 1500), stats: wStats(175, 81, 59, 87, "Black", "Brown", 38, "Hyderabad", "Digital") },
+]
 
 /* ───────── Male model portraits (men board) ─────────
- * All slugs verified against Unsplash photo pages. */
-export const maleModels = [
-  { slug: "arjun-k", name: "Arjun K.", img: u("photo-1625698457101-fec2f565a8f0", 1200, 1500) },
-  { slug: "rohan-s", name: "Rohan S.", img: u("photo-1519058082700-08a0b56da9b4", 1200, 1500) },
-  { slug: "vikram-m", name: "Vikram M.", img: u("photo-1531891570158-e71b35a485bc", 1200, 1500) },
-  { slug: "aditya-r", name: "Aditya R.", img: u("photo-1534030347209-467a5b0ad3e6", 1200, 1500) },
-  { slug: "kabir-d", name: "Kabir D.", img: u("photo-1453396450673-3fe83d2db2c4", 1200, 1500) },
-  { slug: "rishi-p", name: "Rishi P.", img: u("photo-1475403614135-5f1aa0eb5015", 1200, 1500) },
-  { slug: "yash-v", name: "Yash V.", img: u("photo-1480429370139-e0132c086e2a", 1200, 1500) },
-  { slug: "kunal-t", name: "Kunal T.", img: u("photo-1513956589380-bad6acb9b9d4", 1200, 1500) },
-  { slug: "dev-malhotra", name: "Dev Malhotra", img: u("photo-1679217125041-6f81624038d4", 1200, 1500) },
-  { slug: "samar-i", name: "Samar I.", img: u("photo-1603189343302-e603f7add05a", 1200, 1500) },
+ * Real photos for talents we have shoots for; rest use verified
+ * Unsplash editorial slugs. */
+export const maleModels: readonly Model[] = [
+  {
+    slug: "rana",
+    name: "Rana",
+    img: "/images/models/rana/1.png",
+    gallery: localGallery("rana", 9),
+    stats: mStats(186, 98, 78, 93, "Black", "Brown", 43, "Mumbai", "Mainboard"),
+  },
+  { slug: "arjun-k", name: "Arjun K.", img: u("photo-1625698457101-fec2f565a8f0", 1200, 1500), stats: mStats(187, 99, 78, 94, "Black", "Brown", 43, "Bengaluru", "Mainboard") },
+  { slug: "rohan-s", name: "Rohan S.", img: u("photo-1519058082700-08a0b56da9b4", 1200, 1500), stats: mStats(189, 101, 80, 96, "Brown", "Hazel", 44, "Mumbai", "Mainboard") },
+  { slug: "vikram-m", name: "Vikram M.", img: u("photo-1531891570158-e71b35a485bc", 1200, 1500), stats: mStats(186, 98, 78, 93, "Black", "Brown", 43, "Delhi", "Mainboard") },
+  { slug: "aditya-r", name: "Aditya R.", img: u("photo-1534030347209-467a5b0ad3e6", 1200, 1500), stats: mStats(188, 100, 79, 95, "Dark Brown", "Brown", 43, "Pune", "Mainboard") },
+  { slug: "kabir-d", name: "Kabir D.", img: u("photo-1453396450673-3fe83d2db2c4", 1200, 1500), stats: mStats(185, 97, 77, 92, "Black", "Brown", 42, "Bengaluru", "Mainboard") },
+  { slug: "rishi-p", name: "Rishi P.", img: u("photo-1475403614135-5f1aa0eb5015", 1200, 1500), stats: mStats(190, 101, 80, 96, "Brown", "Green", 44, "Goa", "New Faces") },
+  { slug: "yash-v", name: "Yash V.", img: u("photo-1480429370139-e0132c086e2a", 1200, 1500), stats: mStats(184, 96, 76, 91, "Brown", "Brown", 42, "Chennai", "New Faces") },
+  { slug: "kunal-t", name: "Kunal T.", img: u("photo-1513956589380-bad6acb9b9d4", 1200, 1500), stats: mStats(186, 98, 78, 93, "Black", "Brown", 43, "Hyderabad", "Development") },
+  { slug: "dev-malhotra", name: "Dev Malhotra", img: u("photo-1679217125041-6f81624038d4", 1200, 1500), stats: mStats(188, 99, 79, 94, "Black", "Brown", 43, "Mumbai", "Development") },
+  { slug: "samar-i", name: "Samar I.", img: u("photo-1603189343302-e603f7add05a", 1200, 1500), stats: mStats(185, 97, 77, 92, "Black", "Brown", 42, "Kolkata", "Digital") },
+]
+
+/* ───────── Lookup helper used by the Model Detail page ───────── */
+export function findModelBySlug(
+  slug: string,
+): { model: Model; gender: "Women" | "Men" } | null {
+  const fem = femaleModels.find((m) => m.slug === slug)
+  if (fem) return { model: fem, gender: "Women" }
+  const mal = maleModels.find((m) => m.slug === slug)
+  if (mal) return { model: mal, gender: "Men" }
+  return null
+}
+
+/* ───────── Editorial gallery pool (used by Model Detail) ─────────
+ * Verified portrait IDs only — no runway/object shots. The detail
+ * page cycles through this pool to fill its asymmetric layout. */
+export const modelGalleryPool = [
+  u("photo-1574015974293-817f0ebebb74", 1800),
+  u("photo-1580478491436-fd6a937acc9e", 1800),
+  u("photo-1538329972958-465d6d2144ed", 1800),
+  u("photo-1645561305502-63a9ba09ab09", 1800),
+  u("photo-1613915617430-8ab0fd7c6baf", 1800),
+  u("photo-1524504388940-b1c1722653e1", 1800),
+  u("photo-1562572159-4efc207f5aff", 1800),
+  u("photo-1531746020798-e6953c6e8e04", 1800),
+  u("photo-1526510747491-58f928ec870f", 1800),
+  u("photo-1564485377539-4af72d1f6a2f", 1800),
+  u("photo-1529626455594-4ff0802cfb7e", 1800),
+  u("photo-1541519481457-763224276691", 1800),
 ] as const
 
 /* ───────── General editorial pool (used in folds, dropdowns, collages) ───────── */

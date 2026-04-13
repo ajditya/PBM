@@ -29,6 +29,9 @@ Design-Reference/
 # Source brand logo masters — deployed copies live in public/images/logos/
 Logo/
 
+# Source model photo masters — deployed copies live in public/images/models/
+Model Photos/
+
 # Playwright MCP screenshots and snapshots
 .playwright-mcp/
 
