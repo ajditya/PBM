@@ -75,7 +75,7 @@ Off-white. Section header left-aligned "UPCOMING & RECENT" (Playfair 56px). Belo
 
 # Screen 2 — Models Listing (Female / Male)
 
-Same sticky nav as homepage but solid off-white background and black text from the start.
+Same sticky nav as homepage, locked into its solid dark `#0a0a0a` state from the start (no transparent-over-hero phase — that variant is reserved for the homepage hero only).
 
 ## Page header (60vh)
 Off-white. Left-aligned massive Playfair "Women." (or "Men.") at 200px, with a tiny "01 — THE ROSTER · 47 TALENTS" eyebrow above. Below the headline, a thin filter bar: "ALL · NEW FACES · MAINBOARD · DEVELOPMENT · DIGITAL" as text links with the active one underlined in gold.

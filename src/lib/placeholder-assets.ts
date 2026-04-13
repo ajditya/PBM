@@ -32,34 +32,37 @@ export const runwayShots = [
   u("photo-1581338834647-b0fb40704e21"),
 ]
 
-/* ───────── Female model portraits (women board) ───────── */
+/* ───────── Female model portraits (women board) ─────────
+ * All slugs verified against Unsplash photo pages — editorial
+ * portraits only, no kids/groups/objects. */
 export const femaleModels = [
-  { slug: "ananya-v", name: "Ananya V.", img: u("photo-1488161628813-04466f872be2", 1200, 1500) },
-  { slug: "ishani-d", name: "Ishani D.", img: u("photo-1494790108377-be9c29b29330", 1200, 1500) },
-  { slug: "meher-r", name: "Meher R.", img: u("photo-1485875437342-9b39470b3d95", 1200, 1500) },
-  { slug: "priya-k", name: "Priya K.", img: u("photo-1509631179647-0177331693ae", 1200, 1500) },
-  { slug: "zara-shah", name: "Zara Shah", img: u("photo-1521577352947-9bb58764b69a", 1200, 1500) },
-  { slug: "elena-gupta", name: "Elena Gupta", img: u("photo-1531746020798-e6953c6e8e04", 1200, 1500) },
-  { slug: "aisha-khanna", name: "Aisha Khanna", img: u("photo-1573496359142-b8d87734a5a2", 1200, 1500) },
-  { slug: "neha-r", name: "Neha R.", img: u("photo-1487412720507-e7ab37603c6f", 1200, 1500) },
-  { slug: "isha-mehra", name: "Isha Mehra", img: u("photo-1554151228-14d9def656e4", 1200, 1500) },
-  { slug: "tara-singh", name: "Tara Singh", img: u("photo-1541823709867-1b206113eafd", 1200, 1500) },
-  { slug: "maya-iyer", name: "Maya Iyer", img: u("photo-1502823403499-6ccfcf4fb453", 1200, 1500) },
-  { slug: "kavya-n", name: "Kavya N.", img: u("photo-1496359867436-cf7c87fbcd57", 1200, 1500) },
+  { slug: "ananya-v", name: "Ananya V.", img: u("photo-1574015974293-817f0ebebb74", 1200, 1500) },
+  { slug: "ishani-d", name: "Ishani D.", img: u("photo-1580478491436-fd6a937acc9e", 1200, 1500) },
+  { slug: "meher-r", name: "Meher R.", img: u("photo-1538329972958-465d6d2144ed", 1200, 1500) },
+  { slug: "priya-k", name: "Priya K.", img: u("photo-1645561305502-63a9ba09ab09", 1200, 1500) },
+  { slug: "zara-shah", name: "Zara Shah", img: u("photo-1613915617430-8ab0fd7c6baf", 1200, 1500) },
+  { slug: "elena-gupta", name: "Elena Gupta", img: u("photo-1524504388940-b1c1722653e1", 1200, 1500) },
+  { slug: "aisha-khanna", name: "Aisha Khanna", img: u("photo-1562572159-4efc207f5aff", 1200, 1500) },
+  { slug: "neha-r", name: "Neha R.", img: u("photo-1531746020798-e6953c6e8e04", 1200, 1500) },
+  { slug: "isha-mehra", name: "Isha Mehra", img: u("photo-1526510747491-58f928ec870f", 1200, 1500) },
+  { slug: "tara-singh", name: "Tara Singh", img: u("photo-1564485377539-4af72d1f6a2f", 1200, 1500) },
+  { slug: "maya-iyer", name: "Maya Iyer", img: u("photo-1529626455594-4ff0802cfb7e", 1200, 1500) },
+  { slug: "kavya-n", name: "Kavya N.", img: u("photo-1541519481457-763224276691", 1200, 1500) },
 ] as const
 
-/* ───────── Male model portraits (men board) ───────── */
+/* ───────── Male model portraits (men board) ─────────
+ * All slugs verified against Unsplash photo pages. */
 export const maleModels = [
-  { slug: "arjun-k", name: "Arjun K.", img: u("photo-1531123897727-8f129e1688ce", 1200, 1500) },
-  { slug: "rohan-s", name: "Rohan S.", img: u("photo-1500648767791-00dcc994a43e", 1200, 1500) },
-  { slug: "vikram-m", name: "Vikram M.", img: u("photo-1521572163474-6864f9cf17ab", 1200, 1500) },
-  { slug: "aditya-r", name: "Aditya R.", img: u("photo-1492562080023-ab3db95bfbce", 1200, 1500) },
-  { slug: "kabir-d", name: "Kabir D.", img: u("photo-1539571696357-5a69c17a67c6", 1200, 1500) },
-  { slug: "rishi-p", name: "Rishi P.", img: u("photo-1506794778202-cad84cf45f1d", 1200, 1500) },
-  { slug: "yash-v", name: "Yash V.", img: u("photo-1504593811423-6dd665756598", 1200, 1500) },
-  { slug: "kunal-t", name: "Kunal T.", img: u("photo-1463453091185-61582044d556", 1200, 1500) },
-  { slug: "dev-malhotra", name: "Dev Malhotra", img: u("photo-1502823403499-6ccfcf4fb453", 1200, 1500) },
-  { slug: "samar-i", name: "Samar I.", img: u("photo-1463453091185-61582044d556", 1200, 1500) },
+  { slug: "arjun-k", name: "Arjun K.", img: u("photo-1625698457101-fec2f565a8f0", 1200, 1500) },
+  { slug: "rohan-s", name: "Rohan S.", img: u("photo-1519058082700-08a0b56da9b4", 1200, 1500) },
+  { slug: "vikram-m", name: "Vikram M.", img: u("photo-1531891570158-e71b35a485bc", 1200, 1500) },
+  { slug: "aditya-r", name: "Aditya R.", img: u("photo-1534030347209-467a5b0ad3e6", 1200, 1500) },
+  { slug: "kabir-d", name: "Kabir D.", img: u("photo-1453396450673-3fe83d2db2c4", 1200, 1500) },
+  { slug: "rishi-p", name: "Rishi P.", img: u("photo-1475403614135-5f1aa0eb5015", 1200, 1500) },
+  { slug: "yash-v", name: "Yash V.", img: u("photo-1480429370139-e0132c086e2a", 1200, 1500) },
+  { slug: "kunal-t", name: "Kunal T.", img: u("photo-1513956589380-bad6acb9b9d4", 1200, 1500) },
+  { slug: "dev-malhotra", name: "Dev Malhotra", img: u("photo-1679217125041-6f81624038d4", 1200, 1500) },
+  { slug: "samar-i", name: "Samar I.", img: u("photo-1603189343302-e603f7add05a", 1200, 1500) },
 ] as const
 
 /* ───────── General editorial pool (used in folds, dropdowns, collages) ───────── */
