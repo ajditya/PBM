@@ -13,9 +13,13 @@ const u = (id: string, w = 1600, h?: number) =>
 
 /* ───────── Hero video ───────── */
 export const heroVideo = {
-  /** Pexels stock — runway / fashion catwalk loop. Update when real footage arrives. */
-  src: "https://videos.pexels.com/video-files/3894252/3894252-uhd_2560_1440_25fps.mp4",
-  poster: u("photo-1490481651871-ab68de25d43d", 1920),
+  /** Pexels stock — runway / fashion catwalk loop. Update when real footage arrives.
+   *  Note: pexels.com video-files endpoint is hotlink-protected; the <video> tag
+   *  will fall back to the poster image if blocked, which is the intended behaviour
+   *  during the placeholder phase. */
+  src: "https://videos.pexels.com/video-files/4715117/4715117-hd_1920_1080_25fps.mp4",
+  poster:
+    "https://images.pexels.com/photos/2613260/pexels-photo-2613260.jpeg?auto=compress&cs=tinysrgb&w=2000",
 }
 
 /* ───────── Runway / wide editorial shots ───────── */
