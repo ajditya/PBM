@@ -14,7 +14,7 @@ import { easeOutExpo } from "@/lib/motion"
  * no submit handler, no Supabase. Local state machine drives
  * step navigation and a small amount of in-memory form state.
  *
- *   Step 1 — Personal     (name, email, phone, dob, gender, city, ig)
+ *   Step 1 — Personal     (name, email, phone, age, gender, city, ig)
  *   Step 2 — Measurements (height, bust, waist, hips, shoes, hair, eyes)
  *   Step 3 — Photos       (PhotoUploadStep — empty/uploading/error)
  *   Step 4 — Review       (two-col summary table)
@@ -29,7 +29,7 @@ type FormData = {
   fullName: string
   email: string
   phone: string
-  dob: string
+  age: string
   gender: "Female" | "Male" | "Non-binary" | ""
   city: string
   instagram: string
@@ -46,7 +46,7 @@ const INITIAL: FormData = {
   fullName: "",
   email: "",
   phone: "",
-  dob: "",
+  age: "",
   gender: "",
   city: "",
   instagram: "",
@@ -174,12 +174,16 @@ export default function ApplicationForm() {
                     />
                   </Field>
 
-                  <Field label="Date of Birth" htmlFor="dob">
+                  <Field label="Age" htmlFor="age">
                     <Input
-                      id="dob"
-                      type="date"
-                      value={data.dob}
-                      onChange={(e) => update("dob", e.target.value)}
+                      id="age"
+                      type="number"
+                      inputMode="numeric"
+                      min={14}
+                      max={80}
+                      placeholder="e.g. 22"
+                      value={data.age}
+                      onChange={(e) => update("age", e.target.value)}
                     />
                   </Field>
 
@@ -402,7 +406,7 @@ function ReviewSummary({ data }: { data: FormData }) {
     { label: "Full Name", value: data.fullName || "—" },
     { label: "Email", value: data.email || "—" },
     { label: "Phone", value: data.phone || "—" },
-    { label: "Date of Birth", value: data.dob || "—" },
+    { label: "Age", value: data.age || "—" },
     { label: "Gender", value: data.gender || "—" },
     { label: "City", value: data.city || "—" },
     { label: "Instagram", value: data.instagram || "—" },

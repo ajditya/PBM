@@ -135,15 +135,6 @@ export default function ModelDetail() {
             >
               Inquire about this model <span aria-hidden className="ml-3">→</span>
             </button>
-
-            {/* Download digitals link */}
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="pbm-link mt-8 self-start text-ink"
-            >
-              Download digitals <span aria-hidden>↓</span>
-            </a>
           </motion.div>
         </div>
       </section>
