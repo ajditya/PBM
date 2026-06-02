@@ -33,7 +33,7 @@ export default function AboutModels() {
             className="order-2 lg:order-1 lg:col-span-6 lg:pt-24"
           >
             <motion.p variants={fadeUp} className="pbm-eyebrow mb-10">
-              02 — The Agency
+              01 — The Agency
             </motion.p>
 
             <motion.h2 variants={fadeUp} className="pbm-display-m">
@@ -42,25 +42,19 @@ export default function AboutModels() {
 
             <motion.div
               variants={fadeUp}
-              className="pbm-body mt-12 max-w-[42ch] space-y-6"
+              className="pbm-body mt-12 max-w-[46ch] space-y-6"
             >
               <p>
-                Prasad Bidapa Models is the agency arm — a curated roster of
-                women and men working across editorial, runway, lookbook and
-                campaign. Forty years of casting has shaped a precise eye for
-                the faces that translate to the page.
+                One of India's most established and trusted model management
+                agencies, dedicated to discovering, developing, and
+                representing exceptional talent. With decades of experience, the
+                agency has launched successful careers while supplying top-tier
+                models for campaigns, editorials, runway shows, commercials, and
+                brand activations.
               </p>
               <p>
-                We supply talent to designers, magazines and luxury houses
-                across India and internationally, and develop new boards in
-                Bengaluru, Mumbai and Delhi. Mainboard, New Faces, Development
-                and Digital sit under one roof, on one wall, with one promise
-                to every booker who walks in.
-              </p>
-              <p>
-                The discoveries — Deepika Padukone, Anushka Sharma, Lara Dutta,
-                John Abraham, Arjun Rampal, Jacqueline Fernandez — speak to a
-                method that has not changed in four decades.
+                Known for professionalism, credibility, and quality
+                representation.
               </p>
             </motion.div>
 

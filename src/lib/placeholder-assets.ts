@@ -323,18 +323,39 @@ export const properties = [
   },
 ] as const
 
-/* ───────── Team members (used on About Section 5) ─────────
- * Eight placeholder portraits. Names fictional, roles real. */
-export const teamMembers = [
-  { name: "Tara D'Souza",       role: "Director · Models",      img: u("photo-1531123897727-8f129e1688ce", 800, 1000) },
-  { name: "Vikram Joshi",       role: "Director · Events",      img: u("photo-1500648767791-00dcc994a43e", 800, 1000) },
-  { name: "Anaya Reddy",        role: "Head of Bookings",       img: u("photo-1544005313-94ddf0286df2", 800, 1000) },
-  { name: "Karan Mehta",        role: "Production Lead",        img: u("photo-1506794778202-cad84cf45f1d", 800, 1000) },
-  { name: "Ishita Banerjee",    role: "Talent Scout",           img: u("photo-1438761681033-6461ffad8d80", 800, 1000) },
-  { name: "Aman Kapoor",        role: "Creative Direction",     img: u("photo-1507003211169-0a1dd7228f2d", 800, 1000) },
-  { name: "Sneha Iyer",         role: "Communications",         img: u("photo-1487412720507-e7ab37603c6f", 800, 1000) },
-  { name: "Rohit Verma",        role: "Studio Manager",         img: u("photo-1492562080023-ab3db95bfbce", 800, 1000) },
-] as const
+/* ───────── Team members (used on About — The Team) ─────────
+ * The real core team. Bios are final copy. Founder uses the real
+ * portrait; Rana reuses his on-roster shoot; Arry is a placeholder
+ * editorial portrait until a real headshot is supplied. */
+export interface TeamMember {
+  name: string
+  /** Role / credential line shown under the name. */
+  role: string
+  /** Editorial bio paragraph. */
+  bio: string
+  img: string
+}
+
+export const teamMembers: readonly TeamMember[] = [
+  {
+    name: "Prasad Bidapa",
+    role: "Founder",
+    bio: "A pioneering force in Indian fashion, Prasad Bidapa has spent decades shaping the country's style landscape through runway direction, talent discovery, and fashion entrepreneurship. Widely regarded as one of the architects of modern fashion presentation in India, he has elevated fashion shows into world-class experiences blending creativity, discipline, and commercial relevance. His influence spans fashion weeks, luxury showcases, pageants, talent platforms, and model development.",
+    img: founderPortrait,
+  },
+  {
+    name: "Arry Dabas",
+    role: "Mr India 2012 · Choreography, Business & Creative Direction",
+    bio: "Mr India 2012. A multifaceted professional bringing together business acumen, creative direction, and fashion expertise. A respected choreographer who has conceptualised and executed top-tier fashion shows and large-scale productions, with deep experience in talent management, brand collaborations, and event execution.",
+    img: u("photo-1507003211169-0a1dd7228f2d", 800, 1000),
+  },
+  {
+    name: "Shamsher Singh Rana",
+    role: "Talent · 15+ Years Modelling",
+    bio: "Over 15 years of modelling experience with a strong reputation across fashion and media. Specialises in building print and digital platforms, creating opportunities for emerging and established talent, contributing to campaigns and media-driven projects.",
+    img: "/images/models/rana/1.png",
+  },
+]
 
 /* ───────── About-page services lists ───────── */
 export const associatesServices = [

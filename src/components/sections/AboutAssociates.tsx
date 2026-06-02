@@ -73,7 +73,7 @@ export default function AboutAssociates() {
             className="lg:col-span-6 lg:col-start-7 lg:pt-24"
           >
             <motion.p variants={fadeUp} className="pbm-eyebrow mb-10">
-              01 — The Production House
+              02 — The Production House
             </motion.p>
 
             <motion.h2 variants={fadeUp} className="pbm-display-m">
@@ -82,24 +82,15 @@ export default function AboutAssociates() {
 
             <motion.div
               variants={fadeUp}
-              className="pbm-body mt-12 max-w-[42ch] space-y-6"
+              className="pbm-body mt-12 max-w-[46ch] space-y-6"
             >
               <p>
-                Prasad Bidapa Associates produces the country's most enduring
-                fashion-week formats and large-scale talent hunt shows. From
-                Bengaluru to Colombo, we have staged editorial runways for two
-                decades — quietly building a rhythm the industry now expects.
-              </p>
-              <p>
-                The studio has partnered with state tourism boards, design
-                councils and luxury brands to bring craft, costume and
-                contemporary cut onto the same stage. We work small, we work
-                slow, and we work in service of the garment.
-              </p>
-              <p>
-                Mega Model Hunt remains the flagship — twenty-two editions and
-                counting — but the broader practice now spans heritage
-                programming, men's fashion week and curated luxury showcases.
+                A globally recognised fashion and lifestyle company that curates
+                and executes premium fashion events across India and worldwide.
+                Built on creativity, credibility, and innovation, it has worked
+                with leading luxury brands, institutions, designers, and
+                corporate houses — from fashion weeks and brand launches to
+                image consulting and specialised showcases.
               </p>
             </motion.div>
 

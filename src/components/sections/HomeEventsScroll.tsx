@@ -31,7 +31,7 @@ export default function HomeEventsScroll() {
 
   return (
     <section
-      aria-label="Upcoming & Recent Events"
+      aria-label="Events"
       className="relative bg-paper text-ink"
     >
       <div className="mx-auto max-w-[1600px] px-6 pt-24 sm:px-10 sm:pt-32 lg:px-14 lg:pt-40">
@@ -50,7 +50,7 @@ export default function HomeEventsScroll() {
             03 / The Calendar
           </motion.p>
           <motion.h2 variants={fadeUp} className="pbm-display-m">
-            Upcoming &amp; recent.
+            Events.
           </motion.h2>
         </motion.div>
       </div>

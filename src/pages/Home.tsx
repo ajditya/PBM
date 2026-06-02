@@ -10,8 +10,8 @@ export default function Home() {
     <main>
       <HomeHero />
       <HomeAbout />
-      <HomeAssociatesTeaser />
       <HomeModelsTeaser />
+      <HomeAssociatesTeaser />
       <HomeClientsMarquee />
       <HomeEventsScroll />
     </main>

@@ -5,8 +5,12 @@ import { modelGalleryPool } from "@/lib/placeholder-assets"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
- * EditorialSlider — single-image lookbook variant of the
- * Model Detail gallery.
+ * EditorialSlider — single-image lookbook used as the Model
+ * Detail page's primary visual.
+ *
+ * Embeddable: renders no outer <section> or max-width of its own
+ * so it can sit inside a grid column beside the stats panel. The
+ * stage fills its container width.
  *
  * Layout:
  *   ← [ large editorial photo, soft fade ]  →
@@ -21,11 +25,12 @@ import { easeOutExpo } from "@/lib/motion"
 
 interface Props {
   pool?: readonly string[]
+  className?: string
 }
 
 const fmt = (n: number) => n.toString().padStart(2, "0")
 
-export default function EditorialSlider({ pool }: Props) {
+export default function EditorialSlider({ pool, className }: Props) {
   const source = pool && pool.length > 0 ? pool : modelGalleryPool
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState<1 | -1>(1)
@@ -63,13 +68,10 @@ export default function EditorialSlider({ pool }: Props) {
   const progress = total <= 1 ? 1 : (safeIndex + 1) / total
 
   return (
-    <section
-      aria-label="Editorial slider"
-      className="bg-paper py-24 sm:py-32 lg:py-40"
-    >
-      <div className="mx-auto w-full max-w-[1600px] px-6 sm:px-10 lg:px-14">
+    <div aria-label="Editorial slider" className={className}>
+      <div className="w-full">
         {/* ── Stage ── */}
-        <div className="relative mx-auto w-full max-w-[460px] sm:max-w-[520px] lg:max-w-[580px]">
+        <div className="relative w-full">
           <div className="relative aspect-[5/7] w-full overflow-hidden bg-ink/5">
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.img
@@ -174,6 +176,6 @@ export default function EditorialSlider({ pool }: Props) {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   )
 }

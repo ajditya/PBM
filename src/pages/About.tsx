@@ -3,19 +3,17 @@ import { motion } from "framer-motion"
 import AboutAssociates from "@/components/sections/AboutAssociates"
 import AboutFounder from "@/components/sections/AboutFounder"
 import AboutModels from "@/components/sections/AboutModels"
-import AboutProperties from "@/components/sections/AboutProperties"
 import AboutTeam from "@/components/sections/AboutTeam"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
  * Screen 5 — About.
  *
- * Hero (80vh, off-white) + 5 stacked sections:
- *   01 The Associates
- *   02 The Models
- *   03 The Founder (full-bleed dark)
- *   04 Our Properties (4-col IP grid)
- *   05 The Team (asymmetric grid)
+ * Hero (80vh, off-white) + 4 stacked sections:
+ *   01 The Models
+ *   02 The Associates
+ *      The Founder (full-bleed dark)
+ *   03 The Team (real team grid)
  * ──────────────────────────────────────────────────────────── */
 
 function AboutHero() {
@@ -68,7 +66,7 @@ function AboutHero() {
         {/* Bottom hairline + scroll cue */}
         <div className="mt-20 flex items-end justify-between border-t border-hairline pt-6 sm:mt-28 lg:mt-36">
           <p className="pbm-meta-label">
-            The House — Associates · Models · Founder · Properties · Team
+            The House — Models · Associates · Founder · Team
           </p>
           <span aria-hidden className="pbm-meta-label hidden sm:inline">
             Scroll ↓
@@ -83,10 +81,9 @@ export default function About() {
   return (
     <main className="bg-paper text-ink">
       <AboutHero />
-      <AboutAssociates />
       <AboutModels />
+      <AboutAssociates />
       <AboutFounder />
-      <AboutProperties />
       <AboutTeam />
     </main>
   )

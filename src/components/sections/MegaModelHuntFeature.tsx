@@ -83,11 +83,12 @@ export default function MegaModelHuntFeature() {
           {/* ── Right — paragraph, stats, CTA ── */}
           <div className="flex flex-col lg:col-span-6 lg:pt-8">
             <motion.p variants={fadeUp} className="pbm-body max-w-xl">
-              Since 1985, India's longest-running model search has scouted
-              raw faces from six cities and put them in front of the
-              country's biggest designers. The Hunt discovered Deepika
-              Padukone, Anushka Sharma and Lara Dutta — and another 150-plus
-              names who define editorial India today.
+              The flagship talent discovery platform renowned for scouting,
+              mentoring, and developing promising faces for the fashion
+              industry. A credible launchpad for aspiring models, it transforms
+              potential into professional careers through expert guidance,
+              industry exposure, and structured grooming across runway, print,
+              advertising, and digital media.
             </motion.p>
 
             {/* Stats row */}

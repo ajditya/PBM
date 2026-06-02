@@ -73,16 +73,17 @@ export default function HomeAbout() {
               className="pbm-body mt-12 max-w-[42ch] space-y-6"
             >
               <p>
-                An NID Ahmedabad alumnus mentored by Martand Singh and
-                Pupul Jayakar, Prasad Bidapa has spent over forty years
-                quietly shaping the country's fashion language — from
-                runway to retail to the photographic image.
+                A pioneering force in Indian fashion, Prasad Bidapa has spent
+                decades shaping the country's style landscape through runway
+                direction, talent discovery, and fashion entrepreneurship.
+                Widely regarded as one of the architects of modern fashion
+                presentation in India, he has elevated fashion shows into
+                world-class experiences blending creativity, discipline, and
+                commercial relevance.
               </p>
               <p>
-                His agencies discovered Deepika Padukone, Anushka Sharma,
-                Lara Dutta, John Abraham, Arjun Rampal, Jacqueline
-                Fernandez and Dino Morea — the faces that came to define
-                a generation of Indian fashion.
+                His influence spans fashion weeks, luxury showcases, pageants,
+                talent platforms, and model development.
               </p>
             </motion.div>
 

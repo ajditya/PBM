@@ -75,7 +75,7 @@ export default function HomeAssociatesTeaser() {
             className="lg:col-span-5 lg:col-start-8"
           >
             <motion.p variants={fadeUp} className="pbm-eyebrow mb-10">
-              01 / The Events
+              02 / The Events
             </motion.p>
 
             <motion.h2 variants={fadeUp} className="pbm-display-l">
@@ -88,12 +88,14 @@ export default function HomeAssociatesTeaser() {
 
             <motion.p
               variants={fadeUp}
-              className="pbm-body mt-10 max-w-[40ch]"
+              className="pbm-body mt-10 max-w-[46ch]"
             >
-              From the flagship Mega Model Hunt — twenty-two editions and
-              counting — to fashion weeks across Mumbai, Colombo and
-              Bengaluru, our productions have built the stages on which a
-              generation of Indian models first walked.
+              A globally recognised fashion and lifestyle company that curates
+              and executes premium fashion events across India and worldwide.
+              Built on creativity, credibility, and innovation, it has worked
+              with leading luxury brands, institutions, designers, and
+              corporate houses — from fashion weeks and brand launches to image
+              consulting and specialised showcases.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-12">

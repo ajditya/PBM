@@ -2,9 +2,8 @@ import { useMemo, useState } from "react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 import { motion } from "framer-motion"
 
-import { findModelBySlug } from "@/lib/placeholder-assets"
+import { findModelBySlug, modelGalleryPool } from "@/lib/placeholder-assets"
 import { easeOutExpo } from "@/lib/motion"
-import EditorialGallery from "@/components/EditorialGallery"
 import EditorialSlider from "@/components/EditorialSlider"
 import InquiryDialog, {
   type InquiryState,
@@ -13,10 +12,11 @@ import InquiryDialog, {
 /* ────────────────────────────────────────────────────────────
  * Screen 3 — Model Detail page.
  *
- * 60/40 split hero (left full-bleed editorial portrait, right
- * off-white panel with name + stats + CTA), an asymmetric
- * editorial gallery below, and the inquiry dialog wired to the
- * "INQUIRE ABOUT THIS MODEL" CTA.
+ * One cohesive top fold: the editorial slider is the primary
+ * visual (left ~7 cols, first slide = the model's primary image)
+ * sitting beside the meta panel (right ~5 cols) with name, stats
+ * and the "INQUIRE ABOUT THIS MODEL" CTA. Single slider format
+ * site-wide — no alternate gallery layout.
  * ──────────────────────────────────────────────────────────── */
 
 const STAT_ROWS: ReadonlyArray<{ label: string; key: keyof Model["stats"] }> = [
@@ -62,6 +62,11 @@ export default function ModelDetail() {
   const [first, ...rest] = model.name.split(" ")
   const last = rest.join(" ")
 
+  // Slider source — primary image is always slide 1. Models with a
+  // real gallery already lead with their primary shot; the rest seed
+  // the primary portrait ahead of the shared editorial pool.
+  const gallery = model.gallery ?? [model.img, ...modelGalleryPool]
+
   return (
     <main className="bg-paper text-ink">
       {/* ─── Hero — compact two-column ─── */}
@@ -70,29 +75,22 @@ export default function ModelDetail() {
         className="relative w-full pt-[144px] pb-16 sm:pt-[160px] sm:pb-20 lg:pt-[176px] lg:pb-24"
       >
         <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-12 px-6 sm:px-10 lg:grid-cols-12 lg:gap-16 lg:px-14">
-          {/* ── Portrait — constrained, matches 5:7 source aspect ── */}
-          <motion.figure
+          {/* ── Editorial slider — the primary visual ── */}
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1.4, ease: easeOutExpo }}
-            className="relative mx-auto aspect-[5/7] w-full max-w-[380px] overflow-hidden bg-ink/5 lg:col-span-5 lg:max-w-none"
+            className="lg:col-span-7"
           >
-            <motion.img
-              initial={{ scale: 1.04 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 2.0, ease: easeOutExpo }}
-              src={model.img}
-              alt={`${model.name} editorial portrait`}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </motion.figure>
+            <EditorialSlider pool={gallery} />
+          </motion.div>
 
           {/* ── Meta panel ── */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.0, ease: easeOutExpo, delay: 0.15 }}
-            className="flex flex-col lg:col-span-7 lg:pt-6"
+            className="flex flex-col lg:col-span-5 lg:pt-6"
           >
             <p className="pbm-eyebrow-mute mb-10">
               {gender} · {model.stats.board}
@@ -138,16 +136,6 @@ export default function ModelDetail() {
           </motion.div>
         </div>
       </section>
-
-      {/* ─── Editorial gallery ───
-       * A/B comparison: female model pages render the asymmetric
-       * stacked gallery; male model pages render the slider lookbook.
-       * Once the user picks one, this conditional collapses. */}
-      {gender === "Men" ? (
-        <EditorialSlider pool={model.gallery} />
-      ) : (
-        <EditorialGallery pool={model.gallery} />
-      )}
 
       {/* ─── Inquiry Dialog ─── */}
       <InquiryDialog

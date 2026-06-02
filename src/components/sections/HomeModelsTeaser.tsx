@@ -37,7 +37,7 @@ export default function HomeModelsTeaser() {
             className="lg:col-span-5"
           >
             <motion.p variants={fadeUp} className="pbm-eyebrow mb-10">
-              02 / The Agency
+              01 / The Agency
             </motion.p>
 
             <motion.h2 variants={fadeUp} className="pbm-display-l">
@@ -50,11 +50,15 @@ export default function HomeModelsTeaser() {
 
             <motion.p
               variants={fadeUp}
-              className="pbm-body-inverse mt-10 max-w-[40ch]"
+              className="pbm-body-inverse mt-10 max-w-[46ch]"
             >
-              A roster shaped by four decades of taste — main board talent,
-              new faces, and the next generation of mainboard supermodels,
-              represented across India and internationally.
+              One of India's most established and trusted model management
+              agencies, dedicated to discovering, developing, and representing
+              exceptional talent. With decades of experience, the agency has
+              launched successful careers while supplying top-tier models for
+              campaigns, editorials, runway shows, commercials, and brand
+              activations. Known for professionalism, credibility, and quality
+              representation.
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-12">
