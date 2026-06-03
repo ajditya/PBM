@@ -85,12 +85,17 @@ export default function AboutAssociates() {
               className="pbm-body mt-12 max-w-[46ch] space-y-6"
             >
               <p>
-                A globally recognised fashion and lifestyle company that curates
-                and executes premium fashion events across India and worldwide.
-                Built on creativity, credibility, and innovation, it has worked
+                Prasad Bidapa Associates is a globally recognised fashion and
+                lifestyle company that has curated and executed premium fashion
+                events across India and around the world. With a legacy built on
+                creativity, credibility, and innovation, the company has worked
                 with leading luxury brands, institutions, designers, and
-                corporate houses — from fashion weeks and brand launches to
-                image consulting and specialised showcases.
+                corporate houses to create memorable experiences at scale.
+              </p>
+              <p>
+                From fashion weeks and brand launches to image consulting and
+                specialised showcases, it continues to deliver high-impact
+                concepts that combine style, culture, and commercial excellence.
               </p>
             </motion.div>
 

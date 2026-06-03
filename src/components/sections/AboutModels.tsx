@@ -45,16 +45,18 @@ export default function AboutModels() {
               className="pbm-body mt-12 max-w-[46ch] space-y-6"
             >
               <p>
-                One of India's most established and trusted model management
-                agencies, dedicated to discovering, developing, and
-                representing exceptional talent. With decades of experience, the
+                Prasad Bidapa Models is one of India's most established and
+                trusted model management agencies, dedicated to discovering,
+                developing, and representing exceptional talent. With decades of
+                experience and an unmatched understanding of the industry, the
                 agency has launched successful careers while supplying top-tier
                 models for campaigns, editorials, runway shows, commercials, and
                 brand activations.
               </p>
               <p>
                 Known for professionalism, credibility, and quality
-                representation.
+                representation, it continues to be a preferred destination for
+                both talent and leading brands.
               </p>
             </motion.div>
 

@@ -340,19 +340,19 @@ export const teamMembers: readonly TeamMember[] = [
   {
     name: "Prasad Bidapa",
     role: "Founder",
-    bio: "A pioneering force in Indian fashion, Prasad Bidapa has spent decades shaping the country's style landscape through runway direction, talent discovery, and fashion entrepreneurship. Widely regarded as one of the architects of modern fashion presentation in India, he has elevated fashion shows into world-class experiences blending creativity, discipline, and commercial relevance. His influence spans fashion weeks, luxury showcases, pageants, talent platforms, and model development.",
+    bio: "A pioneering force in Indian fashion, Prasad Bidapa has spent decades shaping the country's style landscape through runway direction, talent discovery, and fashion entrepreneurship. Widely regarded as one of the architects of modern fashion presentation in India, he has played a defining role in elevating fashion shows into world-class experiences that blend creativity, discipline, and commercial relevance. His influence spans fashion weeks, luxury showcases, pageants, talent platforms, and model development. Through his vision, mentorship, and commitment to excellence, he has helped launch countless careers while continuing to inspire generations of talent and industry leaders.",
     img: founderPortrait,
   },
   {
     name: "Arry Dabas",
     role: "Mr India 2012 · Choreography, Business & Creative Direction",
-    bio: "Mr India 2012. A multifaceted professional bringing together business acumen, creative direction, and fashion expertise. A respected choreographer who has conceptualised and executed top-tier fashion shows and large-scale productions, with deep experience in talent management, brand collaborations, and event execution.",
+    bio: "Mr India 2012 Arry Dabas, is a multifaceted industry professional who brings together business acumen, creative direction, and fashion expertise. A respected choreographer, he has conceptualised and executed several top-tier fashion shows, luxury showcases, and large-scale productions across the industry. With extensive experience in talent management, brand collaborations, and event execution, he plays a key role in creating impactful partnerships and expanding new business opportunities. His modern outlook and hands-on leadership make him an important force in contemporary fashion ventures.",
     img: u("photo-1507003211169-0a1dd7228f2d", 800, 1000),
   },
   {
     name: "Shamsher Singh Rana",
     role: "Talent · 15+ Years Modelling",
-    bio: "Over 15 years of modelling experience with a strong reputation across fashion and media. Specialises in building print and digital platforms, creating opportunities for emerging and established talent, contributing to campaigns and media-driven projects.",
+    bio: "With over 15 years of modelling experience, Shamsher Singh Rana has built a strong reputation across the fashion and media industry. His expertise lies in building platforms focused on print and digital mediums, creating relevant opportunities for emerging and established talent alike. Combining industry knowledge with a deep understanding of brand requirements, he has contributed to campaigns, talent initiatives, and media-driven projects that reflect the changing dynamics of modern fashion. His experience and strategic insight continue to add strength to talent-focused ventures.",
     img: "/images/models/rana/1.png",
   },
 ]
