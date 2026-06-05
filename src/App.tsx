@@ -16,6 +16,7 @@ import AdminLayout from "@/components/admin/AdminLayout"
 import AdminLogin from "@/pages/admin/AdminLogin"
 import AdminResetPassword from "@/pages/admin/AdminResetPassword"
 import AdminHome from "@/pages/admin/AdminHome"
+import Inbox from "@/pages/admin/Inbox"
 import ComingSoon from "@/pages/admin/ComingSoon"
 
 export default function App() {
@@ -44,7 +45,7 @@ export default function App() {
       <Route path="/admin" element={<RequireAuth />}>
         <Route element={<AdminLayout />}>
           <Route index element={<AdminHome />} />
-          <Route path="inbox" element={<ComingSoon section="Inbox" />} />
+          <Route path="inbox" element={<Inbox />} />
           <Route path="models" element={<ComingSoon section="Models" />} />
           <Route path="events" element={<ComingSoon section="Events" />} />
           <Route path="media" element={<ComingSoon section="Media" />} />
