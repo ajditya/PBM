@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 
-import { events } from "@/lib/placeholder-assets"
 import {
   fadeUp,
   imageReveal,
@@ -17,8 +16,8 @@ import {
  * on the left with a gold eyebrow, paragraph copy + stats row +
  * CTA bar on the right.
  *
- * The featured event is the first flagship-typed entry in
- * `placeholder-assets.events`.
+ * B2: the featured event's cover + slug are supplied by the parent
+ * (the flagship-typed Supabase row). All other copy is fixed.
  * ──────────────────────────────────────────────────────────── */
 
 const STATS = [
@@ -28,10 +27,17 @@ const STATS = [
   { value: "6", label: "Cities" },
 ] as const
 
-export default function MegaModelHuntFeature() {
-  const flagship =
-    events.find((e) => e.type === "flagship") ?? events[0]
+interface Props {
+  /** Public URL of the flagship cover image. Omitted while loading. */
+  cover?: string
+  /** Flagship event slug for the CTA link. */
+  slug?: string
+}
 
+export default function MegaModelHuntFeature({
+  cover,
+  slug = "mega-model-hunt-2026",
+}: Props) {
   return (
     <section
       aria-label="Mega Model Hunt — the flagship event"
@@ -45,11 +51,13 @@ export default function MegaModelHuntFeature() {
         variants={imageReveal}
         className="relative aspect-[16/9] w-full overflow-hidden bg-ink/5 sm:aspect-[21/9]"
       >
-        <img
-          src={flagship.cover}
-          alt="Mega Model Hunt runway show"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        {cover && (
+          <img
+            src={cover}
+            alt="Mega Model Hunt runway show"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
         <div
           aria-hidden
           className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/40 to-transparent"
@@ -106,7 +114,7 @@ export default function MegaModelHuntFeature() {
 
             {/* CTA */}
             <motion.div variants={fadeUp} className="mt-16">
-              <Link to={`/events/${flagship.slug}`} className="pbm-bar block">
+              <Link to={`/events/${slug}`} className="pbm-bar block">
                 Apply for 2026 Edition <span aria-hidden className="ml-3">→</span>
               </Link>
             </motion.div>

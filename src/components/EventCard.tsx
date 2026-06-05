@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-import type { events } from "@/lib/placeholder-assets"
+import { publicUrl, type EventRow } from "@/lib/supabase"
 
 /* ────────────────────────────────────────────────────────────
  * Reusable editorial event card.
@@ -17,9 +17,36 @@ import type { events } from "@/lib/placeholder-assets"
  *   - VIEW gets a gold underline drawn in left-to-right
  *   - "01 / 04" pagination indicator fades in top-right of image
  *     (only when `index` + `total` are provided)
+ *
+ * B2: cards are fed from Supabase rows via `eventRowToCard`.
  * ──────────────────────────────────────────────────────────── */
 
-type EventLike = (typeof events)[number]
+/** View-model the card renders. Decoupled from the data source. */
+export interface EventLike {
+  slug: string
+  title: string
+  date: string
+  city: string
+  cover: string
+}
+
+/** Format an ISO date (YYYY-MM-DD) as the editorial "DD · MM · YYYY". */
+export function formatEventDate(iso: string | null): string {
+  if (!iso) return ""
+  const [y, m, d] = iso.split("-")
+  return `${d} · ${m} · ${y}`
+}
+
+/** Map a DB event row to the card view-model (public cover URL + formatted date). */
+export function eventRowToCard(row: EventRow): EventLike {
+  return {
+    slug: row.slug,
+    title: row.title,
+    date: formatEventDate(row.event_date),
+    city: row.location ?? "",
+    cover: publicUrl(row.cover_image),
+  }
+}
 
 export interface EventCardProps {
   event: EventLike

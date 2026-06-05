@@ -1,9 +1,10 @@
 import { useRef } from "react"
 import { motion, useMotionValue } from "framer-motion"
 
-import { events } from "@/lib/placeholder-assets"
+import { getEvents } from "@/lib/supabase"
+import { useAsyncData } from "@/hooks/useAsyncData"
 import { fadeUp, viewportDefault } from "@/lib/motion"
-import EventCard from "@/components/EventCard"
+import EventCard, { eventRowToCard } from "@/components/EventCard"
 
 /* ────────────────────────────────────────────────────────────
  * Homepage fold 6 — "UPCOMING & RECENT".
@@ -22,12 +23,14 @@ import EventCard from "@/components/EventCard"
  * an inline style + a global class via attribute selector.
  * ──────────────────────────────────────────────────────────── */
 
-const ROW = events.slice(0, 4)
-
 export default function HomeEventsScroll() {
   const x = useMotionValue(0)
   const rowRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  const { data } = useAsyncData(getEvents, [])
+  const row = (data ?? []).slice(0, 4)
+  const loading = !data
 
   return (
     <section
@@ -73,14 +76,28 @@ export default function HomeEventsScroll() {
           style={{ x }}
           className="flex w-max items-start gap-6 px-6 sm:gap-8 sm:px-10 lg:gap-10 lg:px-14"
         >
-          {ROW.map((event) => (
-            <div
-              key={event.slug}
-              className="w-[78vw] sm:w-[44vw] lg:w-[26rem] xl:w-[28rem]"
-            >
-              <EventCard event={event} />
-            </div>
-          ))}
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-[78vw] sm:w-[44vw] lg:w-[26rem] xl:w-[28rem]"
+                >
+                  <div className="aspect-[4/5] w-full animate-pulse bg-ink/5" />
+                  <div className="mt-6 space-y-3">
+                    <div className="h-5 w-28 animate-pulse bg-ink/5" />
+                    <div className="h-5 w-40 animate-pulse bg-ink/5" />
+                    <div className="h-2.5 w-20 animate-pulse bg-ink/5" />
+                  </div>
+                </div>
+              ))
+            : row.map((event) => (
+                <div
+                  key={event.slug}
+                  className="w-[78vw] sm:w-[44vw] lg:w-[26rem] xl:w-[28rem]"
+                >
+                  <EventCard event={eventRowToCard(event)} />
+                </div>
+              ))}
           {/* Trailing breathing room so the last card can clear the right edge */}
           <div aria-hidden className="w-6 sm:w-10 lg:w-14" />
         </motion.div>

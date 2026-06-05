@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 import { motion } from "framer-motion"
 
-import { findModelBySlug, modelGalleryPool } from "@/lib/placeholder-assets"
+import { getModelBySlug, publicUrl, type ModelRow } from "@/lib/supabase"
+import { useAsyncData } from "@/hooks/useAsyncData"
 import { easeOutExpo } from "@/lib/motion"
 import { SliderStage, SliderControls } from "@/components/EditorialSlider"
 import { useEditorialSlider } from "@/hooks/useEditorialSlider"
@@ -19,9 +20,13 @@ import InquiryDialog, {
  * slider navigation (counter + thumbnail rail), the measurements,
  * and the "INQUIRE ABOUT THIS MODEL" CTA. On mobile it stacks:
  * name → photo → nav → measurements → CTA.
+ *
+ * B2: model + gallery now come from Supabase (getModelBySlug). The
+ * gallery feeds the slider in sort_order (slide 1 = primary). UI is
+ * unchanged; board renders upper-cased by the eyebrow style.
  * ──────────────────────────────────────────────────────────── */
 
-const STAT_ROWS: ReadonlyArray<{ label: string; key: keyof Model["stats"] }> = [
+const STAT_ROWS: ReadonlyArray<{ label: string; key: keyof ModelRow }> = [
   { label: "Height", key: "height" },
   { label: "Bust", key: "bust" },
   { label: "Waist", key: "waist" },
@@ -32,32 +37,70 @@ const STAT_ROWS: ReadonlyArray<{ label: string; key: keyof Model["stats"] }> = [
   { label: "Location", key: "location" },
 ]
 
-type Model = NonNullable<ReturnType<typeof findModelBySlug>>["model"]
-
 export default function ModelDetail() {
   const { slug = "" } = useParams()
   const [searchParams] = useSearchParams()
-  const found = useMemo(() => findModelBySlug(slug), [slug])
+
+  const { data: model, loading, error } = useAsyncData(
+    () => getModelBySlug(slug),
+    [slug],
+  )
 
   // Dev-only state preview via ?state=submitting|success|error
   const previewedState = searchParams.get("state") as InquiryState | null
   const [dialogOpen, setDialogOpen] = useState<boolean>(!!previewedState)
 
-  // Slider source — primary image is always slide 1. Models with a
-  // real gallery already lead with their primary shot; the rest seed
-  // the primary portrait ahead of the shared editorial pool. Computed
-  // before the early return so the slider hook is called unconditionally.
-  const gallery = found
-    ? found.model.gallery ?? [found.model.img, ...modelGalleryPool]
-    : undefined
+  // Slider source — primary image is always slide 1 (gallery sort_order). Hook
+  // is called unconditionally; while loading we render a skeleton instead.
+  const gallery = model?.gallery?.length
+    ? model.gallery.map((g) => publicUrl(g.image_path))
+    : model?.cover_image
+      ? [publicUrl(model.cover_image)]
+      : undefined
   const slider = useEditorialSlider(gallery)
 
-  if (!found) {
+  /* ── Loading ── */
+  if (loading) {
+    return (
+      <main className="bg-paper text-ink">
+        <section className="relative w-full pt-[144px] pb-16 sm:pt-[160px] sm:pb-20 lg:pt-[176px] lg:pb-24">
+          <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-10 px-6 sm:px-10 lg:grid-cols-12 lg:gap-x-16 lg:gap-y-10 lg:px-14">
+            <div className="order-1 flex flex-col lg:col-span-5 lg:col-start-1 lg:row-start-1">
+              <div className="mb-10 h-3 w-40 animate-pulse bg-ink/10" />
+              <div className="h-16 w-3/4 animate-pulse bg-ink/5 sm:h-20" />
+              <div aria-hidden className="mt-12 h-px w-16 bg-gold" />
+            </div>
+            <div className="order-2 lg:col-span-6 lg:col-start-7 lg:row-start-1 lg:row-span-4">
+              <div className="mx-auto aspect-[5/7] w-full max-w-[420px] animate-pulse bg-ink/5 lg:ml-auto lg:mr-0" />
+            </div>
+            <div className="order-4 grid grid-cols-2 gap-x-10 gap-y-5 lg:col-span-5 lg:col-start-1 lg:row-start-3">
+              {STAT_ROWS.map(({ label }) => (
+                <div
+                  key={label}
+                  className="flex items-baseline justify-between gap-4 border-b border-hairline pb-3"
+                >
+                  <span className="h-2.5 w-12 animate-pulse bg-ink/10" />
+                  <span className="h-2.5 w-10 animate-pulse bg-ink/5" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    )
+  }
+
+  /* ── Error / not found ── */
+  if (error || !model) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-paper px-8 text-ink">
         <div className="text-center">
-          <p className="pbm-eyebrow-mute mb-6">Model not found</p>
-          <h1 className="pbm-display-m">That talent is off-roster.</h1>
+          <p className="pbm-eyebrow-mute mb-6">
+            {error ? "Something went wrong" : "Model not found"}
+          </p>
+          <h1 className="pbm-display-m">
+            {error ? "Please refresh the page." : "That talent is off-roster."}
+          </h1>
           <Link
             to="/models/female"
             className="pbm-link mt-12 inline-flex text-ink"
@@ -69,7 +112,7 @@ export default function ModelDetail() {
     )
   }
 
-  const { model, gender } = found
+  const genderLabel = model.gender === "male" ? "Men" : "Women"
   const [first, ...rest] = model.name.split(" ")
   const last = rest.join(" ")
 
@@ -89,7 +132,7 @@ export default function ModelDetail() {
             className="order-1 flex flex-col lg:col-span-5 lg:col-start-1 lg:row-start-1"
           >
             <p className="pbm-eyebrow-mute mb-10">
-              {gender} · {model.stats.board}
+              {genderLabel} · {model.board}
             </p>
 
             <h1 className="pbm-display-m">
@@ -142,7 +185,7 @@ export default function ModelDetail() {
                 className="flex items-baseline justify-between gap-4 border-b border-hairline pb-3"
               >
                 <dt className="pbm-meta-label">{label}</dt>
-                <dd className="pbm-meta-value">{model.stats[key]}</dd>
+                <dd className="pbm-meta-value">{model[key] ?? "—"}</dd>
               </div>
             ))}
           </motion.dl>
@@ -169,6 +212,7 @@ export default function ModelDetail() {
       <InquiryDialog
         open={dialogOpen}
         modelName={model.name}
+        modelId={model.id}
         onOpenChange={setDialogOpen}
         initialState={previewedState ?? "idle"}
       />

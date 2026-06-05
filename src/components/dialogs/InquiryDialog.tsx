@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 
+import { createInquiry, isValidEmail } from "@/lib/supabase"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -22,6 +23,8 @@ export type InquiryState = "idle" | "submitting" | "success" | "error"
 interface Props {
   open: boolean
   modelName: string
+  /** Current model's id — written to inquiries.model_id. */
+  modelId: string
   onOpenChange: (open: boolean) => void
   /** Demo override — used by `?state=` URL param. */
   initialState?: InquiryState
@@ -33,9 +36,19 @@ interface FieldProps {
   type?: string
   textarea?: boolean
   disabled?: boolean
+  value: string
+  onChange: (value: string) => void
 }
 
-function Field({ id, label, type = "text", textarea = false, disabled }: FieldProps) {
+function Field({
+  id,
+  label,
+  type = "text",
+  textarea = false,
+  disabled,
+  value,
+  onChange,
+}: FieldProps) {
   return (
     <div className="flex flex-col">
       <label htmlFor={id} className="pbm-meta-label mb-2">
@@ -46,6 +59,8 @@ function Field({ id, label, type = "text", textarea = false, disabled }: FieldPr
           id={id}
           rows={3}
           disabled={disabled}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           className="pbm-meta-value resize-none border-0 border-b border-ink bg-transparent py-2 outline-none placeholder:text-mute/50 focus:border-gold disabled:cursor-not-allowed"
         />
       ) : (
@@ -53,6 +68,8 @@ function Field({ id, label, type = "text", textarea = false, disabled }: FieldPr
           id={id}
           type={type}
           disabled={disabled}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           className="pbm-meta-value border-0 border-b border-ink bg-transparent py-2 outline-none placeholder:text-mute/50 focus:border-gold disabled:cursor-not-allowed"
         />
       )}
@@ -87,10 +104,21 @@ function SendingDots() {
 function InquiryDialogInner({
   open,
   modelName,
+  modelId,
   onOpenChange,
   initialState = "idle",
 }: Props) {
   const [state, setState] = useState<InquiryState>(initialState)
+
+  // Controlled fields.
+  const [name, setName] = useState("")
+  const [company, setCompany] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  const [details, setDetails] = useState("")
+  const [dates, setDates] = useState("")
+  // Inline validation caption (distinct from the C4 network-error strip).
+  const [validationMsg, setValidationMsg] = useState("")
 
   // ESC to close
   useEffect(() => {
@@ -112,11 +140,38 @@ function InquiryDialogInner({
     }
   }, [open])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (state === "submitting") return
+
+    // Client-side validation → inline hairline caption (not the C4 strip).
+    if (!name.trim() || !email.trim() || !details.trim()) {
+      setValidationMsg("Please add your name, email, and project details.")
+      return
+    }
+    if (!isValidEmail(email)) {
+      setValidationMsg("Please enter a valid email address.")
+      return
+    }
+
+    setValidationMsg("")
     setState("submitting")
-    // Fake latency — flips to success after 1.4s. No real network call.
-    window.setTimeout(() => setState("success"), 1400)
+    try {
+      // No .select() — anon has no SELECT policy on inquiries.
+      await createInquiry({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim() || null,
+        company: company.trim() || null,
+        message: details.trim(),
+        estimated_dates: dates.trim() || null,
+        model_id: modelId,
+      })
+      setState("success")
+    } catch {
+      // Network/server failure → C4 error strip with the email fallback.
+      setState("error")
+    }
   }
 
   const close = () => onOpenChange(false)
@@ -247,17 +302,57 @@ function InquiryDialogInner({
                     state === "submitting" ? "pointer-events-none opacity-50" : ""
                   }`}
                 >
-                  <Field id="iq-name" label="Your name" disabled={state === "submitting"} />
-                  <Field id="iq-company" label="Company" disabled={state === "submitting"} />
-                  <Field id="iq-email" label="Email" type="email" disabled={state === "submitting"} />
-                  <Field id="iq-phone" label="Phone" type="tel" disabled={state === "submitting"} />
+                  <Field
+                    id="iq-name"
+                    label="Your name"
+                    disabled={state === "submitting"}
+                    value={name}
+                    onChange={setName}
+                  />
+                  <Field
+                    id="iq-company"
+                    label="Company"
+                    disabled={state === "submitting"}
+                    value={company}
+                    onChange={setCompany}
+                  />
+                  <Field
+                    id="iq-email"
+                    label="Email"
+                    type="email"
+                    disabled={state === "submitting"}
+                    value={email}
+                    onChange={setEmail}
+                  />
+                  <Field
+                    id="iq-phone"
+                    label="Phone"
+                    type="tel"
+                    disabled={state === "submitting"}
+                    value={phone}
+                    onChange={setPhone}
+                  />
                   <Field
                     id="iq-details"
                     label="Project details"
                     textarea
                     disabled={state === "submitting"}
+                    value={details}
+                    onChange={setDetails}
                   />
-                  <Field id="iq-dates" label="Estimated dates" disabled={state === "submitting"} />
+                  <Field
+                    id="iq-dates"
+                    label="Estimated dates"
+                    disabled={state === "submitting"}
+                    value={dates}
+                    onChange={setDates}
+                  />
+
+                  {validationMsg && (
+                    <p role="alert" className="text-[11px] text-error">
+                      {validationMsg}
+                    </p>
+                  )}
 
                   <button
                     type="submit"

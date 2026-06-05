@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion"
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { createInquiry, isValidEmail } from "@/lib/supabase"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -51,6 +52,8 @@ export default function ContactForm() {
   const [subject, setSubject] = useState<Subject | "">("")
   const [message, setMessage] = useState("")
   const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
+  const [errorMsg, setErrorMsg] = useState("")
 
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -76,6 +79,44 @@ export default function ContactForm() {
     setSubject("")
     setMessage("")
     setSubmitted(false)
+    setStatus("idle")
+    setErrorMsg("")
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (status === "submitting") return
+
+    // Client-side validation before the network call.
+    if (!name.trim() || !email.trim() || !subject || !message.trim()) {
+      setStatus("error")
+      setErrorMsg("Please complete every field before sending.")
+      return
+    }
+    if (!isValidEmail(email)) {
+      setStatus("error")
+      setErrorMsg("Please enter a valid email address.")
+      return
+    }
+
+    setStatus("submitting")
+    setErrorMsg("")
+    try {
+      // No .select() — anon has no SELECT policy on inquiries.
+      await createInquiry({
+        name: name.trim(),
+        email: email.trim(),
+        subject,
+        message: message.trim(),
+        model_id: null,
+      })
+      setSubmitted(true)
+    } catch {
+      setStatus("error")
+      setErrorMsg(
+        "Something went wrong. Please try again or write to hello@prasadbidapa.com directly.",
+      )
+    }
   }
 
   return (
@@ -127,10 +168,8 @@ export default function ContactForm() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.6, ease: easeOutExpo }}
-              onSubmit={(e) => {
-                e.preventDefault()
-                setSubmitted(true)
-              }}
+              onSubmit={handleSubmit}
+              noValidate
               className="space-y-10"
             >
               <FieldShell label="Name" htmlFor="contact-name">
@@ -229,8 +268,24 @@ export default function ContactForm() {
                 />
               </FieldShell>
 
-              <button type="submit" className="pbm-bar">
-                Send Message <span aria-hidden className="ml-3">→</span>
+              {status === "error" && (
+                <p role="alert" className="text-[11px] text-error">
+                  {errorMsg}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === "submitting"}
+                className="pbm-bar disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {status === "submitting" ? (
+                  "Sending…"
+                ) : (
+                  <>
+                    Send Message <span aria-hidden className="ml-3">→</span>
+                  </>
+                )}
               </button>
             </motion.form>
           )}

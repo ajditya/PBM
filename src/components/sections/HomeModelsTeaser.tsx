@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 
-import { femaleModels, maleModels } from "@/lib/placeholder-assets"
+import { getModels, publicUrl } from "@/lib/supabase"
+import { useAsyncData } from "@/hooks/useAsyncData"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -9,13 +10,20 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
  *
  * Full-bleed dark #0a0a0a, 100vh. Asymmetric three-image
  * collage on the right (one tall, two stacked), text on the left.
+ *
+ * B2: collage portraits come from Supabase models (sort_order → name).
+ * The design has three slots; with only two models in the DB the third
+ * slot falls back to its styled background (no invented/duplicated row).
  * ──────────────────────────────────────────────────────────── */
 
-const tallImage = femaleModels[6].img // Aisha Khanna — anchor portrait
-const stackTop = maleModels[0].img // Arjun K.
-const stackBottom = femaleModels[4].img // Zara Shah
-
 export default function HomeModelsTeaser() {
+  const { data } = useAsyncData(() => getModels(), [])
+  const models = data ?? []
+  const cover = (i: number) => (models[i] ? publicUrl(models[i].cover_image) : "")
+  const tallImage = cover(0)
+  const stackTop = cover(1)
+  const stackBottom = cover(2)
+
   return (
     <section
       aria-label="Prasad Bidapa Models"
@@ -79,32 +87,38 @@ export default function HomeModelsTeaser() {
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {/* Tall portrait — full left column, spans both rows */}
               <figure className="relative row-span-2 aspect-[3/5] overflow-hidden bg-paper/5">
-                <img
-                  src={tallImage}
-                  alt="Editorial portrait"
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                {tallImage && (
+                  <img
+                    src={tallImage}
+                    alt="Editorial portrait"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
               </figure>
 
               {/* Top-right square */}
               <figure className="relative aspect-square overflow-hidden bg-paper/5">
-                <img
-                  src={stackTop}
-                  alt="Editorial portrait"
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                {stackTop && (
+                  <img
+                    src={stackTop}
+                    alt="Editorial portrait"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
               </figure>
 
               {/* Bottom-right portrait */}
               <figure className="relative aspect-[4/5] overflow-hidden bg-paper/5">
-                <img
-                  src={stackBottom}
-                  alt="Editorial portrait"
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                {stackBottom && (
+                  <img
+                    src={stackBottom}
+                    alt="Editorial portrait"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
               </figure>
             </div>
           </motion.div>

@@ -3,8 +3,15 @@ import { AnimatePresence, motion } from "framer-motion"
 
 import { Input } from "@/components/ui/input"
 import StepIndicator from "@/components/forms/StepIndicator"
-import PhotoUploadStep from "@/components/forms/PhotoUploadStep"
+import PhotoUploadStep, { MIN_PHOTOS } from "@/components/forms/PhotoUploadStep"
 import ApplicationSuccess from "@/components/forms/ApplicationSuccess"
+import {
+  createApplication,
+  isValidEmail,
+  signApplicationUploads,
+  supabase,
+  type ApplicationInsert,
+} from "@/lib/supabase"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -59,6 +66,20 @@ const INITIAL: FormData = {
   eyes: "",
 }
 
+/** Map the form's gender labels onto the application_gender enum. */
+function mapGender(g: FormData["gender"]): ApplicationInsert["gender"] {
+  if (g === "Female") return "female"
+  if (g === "Male") return "male"
+  return "other"
+}
+
+/** Already-uploaded photos, retained so an insert failure can retry the row
+ *  write without re-uploading (the photos are already in the private bucket). */
+interface UploadedPhotos {
+  applicationId: string
+  paths: string[]
+}
+
 /* ─── Field wrapper — tracked label, underline input, optional error caption ─── */
 interface FieldProps {
   label: string
@@ -90,17 +111,99 @@ function Field({ label, htmlFor, error, children }: FieldProps) {
 export default function ApplicationForm() {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const [data, setData] = useState<FormData>(INITIAL)
+  const [photos, setPhotos] = useState<File[]>([])
   const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
+  const [errorMsg, setErrorMsg] = useState("")
+  // Set once photos are in the bucket but before the row write succeeds.
+  const [uploaded, setUploaded] = useState<UploadedPhotos | null>(null)
 
-  // Lightweight email demo validation — D4 visual state proof
-  const emailLooksWrong =
-    data.email.length > 0 && !(data.email.includes("@") && data.email.includes("."))
+  // Inline email validation (also gates submit).
+  const emailLooksWrong = data.email.length > 0 && !isValidEmail(data.email)
 
   const update = <K extends keyof FormData>(key: K, value: FormData[K]) =>
     setData((d) => ({ ...d, [key]: value }))
 
   const goNext = () => setStep((s) => (s < 4 ? ((s + 1) as 1 | 2 | 3 | 4) : s))
   const goBack = () => setStep((s) => (s > 1 ? ((s - 1) as 1 | 2 | 3 | 4) : s))
+
+  const handleSubmit = async () => {
+    if (status === "submitting") return
+
+    // Client-side validation before any network call.
+    const missing: string[] = []
+    if (!data.fullName.trim()) missing.push("your name")
+    if (!isValidEmail(data.email)) missing.push("a valid email")
+    if (!data.phone.trim()) missing.push("a phone number")
+    if (!data.gender) missing.push("your gender")
+    if (missing.length) {
+      setStatus("error")
+      setErrorMsg(`Please add ${missing.join(", ")} before submitting.`)
+      return
+    }
+    if (photos.length < MIN_PHOTOS) {
+      setStatus("error")
+      setErrorMsg(`Please add at least ${MIN_PHOTOS} photos before submitting.`)
+      return
+    }
+
+    setStatus("submitting")
+    setErrorMsg("")
+
+    // Snapshot any prior successful upload so a retry skips re-uploading.
+    let done = uploaded
+    try {
+      if (!done) {
+        // 1. Ask the Edge Function for signed upload URLs (it validates first).
+        const { applicationId, uploads } = await signApplicationUploads(
+          photos.map((f) => ({ name: f.name, type: f.type, size: f.size })),
+        )
+        // 2. Upload each file straight to its signed URL (private bucket).
+        for (let i = 0; i < uploads.length; i++) {
+          const { path, token } = uploads[i]
+          const { error } = await supabase.storage
+            .from("applications")
+            .uploadToSignedUrl(path, token, photos[i])
+          if (error) throw error
+        }
+        done = { applicationId, paths: uploads.map((u) => u.path) }
+        // Retain so an insert failure below doesn't orphan-then-re-upload.
+        setUploaded(done)
+      }
+
+      // 3. Insert the application row. No .select() — anon has no SELECT policy.
+      //    id = applicationId so the row id matches the photo folder prefix.
+      await createApplication({
+        id: done.applicationId,
+        name: data.fullName.trim(),
+        email: data.email.trim(),
+        phone: data.phone.trim(),
+        age: data.age ? Number(data.age) : null,
+        gender: mapGender(data.gender),
+        location: data.city.trim() || null,
+        instagram: data.instagram.trim() || null,
+        height: data.height.trim() || null,
+        bust: data.bust.trim() || null,
+        waist: data.waist.trim() || null,
+        hips: data.hips.trim() || null,
+        shoes: data.shoes.trim() || null,
+        hair: data.hair.trim() || null,
+        eyes: data.eyes.trim() || null,
+        photo_paths: done.paths,
+      })
+      setSubmitted(true)
+    } catch {
+      setStatus("error")
+      // If `done` is set, photos are already in the bucket — retry only the row
+      // write (orphaned photos are possible if the applicant abandons here; a
+      // cleanup job can sweep folders with no matching row later).
+      setErrorMsg(
+        done
+          ? "Your photos uploaded, but saving your application failed. Please try again — we won't re-upload."
+          : "Something went wrong submitting your application. Please try again.",
+      )
+    }
+  }
 
   if (submitted) {
     return <ApplicationSuccess firstName={data.fullName.split(" ")[0]} />
@@ -337,7 +440,11 @@ export default function ApplicationForm() {
                   </h2>
                 </header>
 
-                <PhotoUploadStep />
+                <PhotoUploadStep
+                  files={photos}
+                  onChange={setPhotos}
+                  disabled={status === "submitting"}
+                />
               </motion.div>
             )}
 
@@ -360,14 +467,28 @@ export default function ApplicationForm() {
                   </h2>
                 </header>
 
-                <ReviewSummary data={data} />
+                <ReviewSummary data={data} photoCount={photos.length} />
+
+                {status === "error" && (
+                  <p role="alert" className="text-[11px] text-error">
+                    {errorMsg}
+                  </p>
+                )}
 
                 <button
                   type="button"
-                  onClick={() => setSubmitted(true)}
-                  className="pbm-bar"
+                  onClick={handleSubmit}
+                  disabled={status === "submitting"}
+                  className="pbm-bar disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Submit Application <span aria-hidden className="ml-3">→</span>
+                  {status === "submitting" ? (
+                    "Submitting…"
+                  ) : (
+                    <>
+                      {uploaded ? "Retry submission" : "Submit Application"}{" "}
+                      <span aria-hidden className="ml-3">→</span>
+                    </>
+                  )}
                 </button>
               </motion.div>
             )}
@@ -401,7 +522,7 @@ export default function ApplicationForm() {
 }
 
 /* ─── Review summary table — Step 4 internal ─── */
-function ReviewSummary({ data }: { data: FormData }) {
+function ReviewSummary({ data, photoCount }: { data: FormData; photoCount: number }) {
   const rows: Array<{ label: string; value: string }> = [
     { label: "Full Name", value: data.fullName || "—" },
     { label: "Email", value: data.email || "—" },
@@ -417,7 +538,10 @@ function ReviewSummary({ data }: { data: FormData }) {
     { label: "Shoes", value: data.shoes || "—" },
     { label: "Hair", value: data.hair || "—" },
     { label: "Eyes", value: data.eyes || "—" },
-    { label: "Photos", value: "4 uploaded" },
+    {
+      label: "Photos",
+      value: photoCount > 0 ? `${photoCount} selected` : "—",
+    },
   ]
 
   return (

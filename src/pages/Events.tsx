@@ -1,8 +1,9 @@
 import { motion } from "framer-motion"
 
-import { events } from "@/lib/placeholder-assets"
+import { getEvents, publicUrl } from "@/lib/supabase"
+import { useAsyncData } from "@/hooks/useAsyncData"
 import { easeOutExpo, fadeUp, staggerSlow, viewportDefault } from "@/lib/motion"
-import EventCard from "@/components/EventCard"
+import EventCard, { eventRowToCard } from "@/components/EventCard"
 import MegaModelHuntFeature from "@/components/sections/MegaModelHuntFeature"
 import MindBodySoulFeature from "@/components/sections/MindBodySoulFeature"
 
@@ -13,10 +14,31 @@ import MindBodySoulFeature from "@/components/sections/MindBodySoulFeature"
  * Mega Model Hunt feature, the Mind · Body · Soul program band,
  * and a single grid of every other property. No tabs — all event
  * types are showcased together.
+ *
+ * B2: events now come from Supabase (getEvents). The flagship-typed
+ * row feeds the feature block; the property rows fill the grid.
+ * Mind · Body · Soul stays hardcoded (it's not an event row).
  * ──────────────────────────────────────────────────────────── */
 
+/** Skeleton card matching EventCard's footprint. */
+function EventCardSkeleton() {
+  return (
+    <div>
+      <div className="aspect-[4/5] w-full animate-pulse bg-ink/5" />
+      <div className="mt-6 space-y-3">
+        <div className="h-5 w-28 animate-pulse bg-ink/5" />
+        <div className="h-5 w-40 animate-pulse bg-ink/5" />
+        <div className="h-2.5 w-20 animate-pulse bg-ink/5" />
+      </div>
+    </div>
+  )
+}
+
 export default function Events() {
-  const gridEvents = events.filter((e) => e.type !== "flagship")
+  const { data, loading, error } = useAsyncData(getEvents, [])
+  const all = data ?? []
+  const flagship = all.find((e) => e.type === "flagship") ?? null
+  const gridEvents = all.filter((e) => e.type !== "flagship")
 
   return (
     <main className="bg-paper text-ink">
@@ -45,7 +67,10 @@ export default function Events() {
       </section>
 
       {/* ─── Flagship feature ─── */}
-      <MegaModelHuntFeature />
+      <MegaModelHuntFeature
+        cover={flagship ? publicUrl(flagship.cover_image) : undefined}
+        slug={flagship?.slug}
+      />
 
       {/* ─── Mind · Body · Soul program (dark band) ─── */}
       <MindBodySoulFeature />
@@ -68,23 +93,37 @@ export default function Events() {
             </motion.h2>
           </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportDefault}
-            variants={staggerSlow}
-            className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3 lg:gap-x-10"
-          >
-            {gridEvents.map((event, i) => (
-              <motion.div key={event.slug} variants={fadeUp}>
-                <EventCard
-                  event={event}
-                  index={i + 1}
-                  total={gridEvents.length}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
+          {error ? (
+            <p className="pbm-meta-label text-mute">
+              Events couldn’t be loaded. Please refresh.
+            </p>
+          ) : !loading && gridEvents.length === 0 ? (
+            <p className="pbm-meta-label text-mute">No properties listed yet.</p>
+          ) : loading ? (
+            <div className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3 lg:gap-x-10">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <EventCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportDefault}
+              variants={staggerSlow}
+              className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3 lg:gap-x-10"
+            >
+              {gridEvents.map((event, i) => (
+                <motion.div key={event.slug} variants={fadeUp}>
+                  <EventCard
+                    event={eventRowToCard(event)}
+                    index={i + 1}
+                    total={gridEvents.length}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
         </div>
       </section>
     </main>

@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
 
-import { events } from "@/lib/placeholder-assets"
+import { getEvents, publicUrl } from "@/lib/supabase"
+import { useAsyncData } from "@/hooks/useAsyncData"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -9,13 +10,19 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
  *
  * Mirrored layout from fold 3: image collage on the LEFT,
  * editorial copy on the RIGHT. Off-white background.
+ *
+ * B2: collage covers come from the same Supabase events the design
+ * curated — Mega Model Hunt (anchor), Rajasthan Heritage, India Men's.
  * ──────────────────────────────────────────────────────────── */
 
-const tallImage = events[0].cover // Mega Model Hunt — anchor
-const stackTop = events[3].cover // Rajasthan Heritage Week
-const stackBottom = events[1].cover // India Men's Fashion Week
-
 export default function HomeAssociatesTeaser() {
+  const { data } = useAsyncData(getEvents, [])
+  const evs = data ?? []
+  const cover = (i: number) => (evs[i] ? publicUrl(evs[i].cover_image) : "")
+  const tallImage = cover(0) // Mega Model Hunt — anchor
+  const stackTop = cover(3) // Rajasthan Heritage Week
+  const stackBottom = cover(1) // India Men's Fashion Week
+
   return (
     <section
       aria-label="Prasad Bidapa Associates"
@@ -33,30 +40,36 @@ export default function HomeAssociatesTeaser() {
           >
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
               <figure className="relative aspect-[4/5] overflow-hidden bg-ink/5">
-                <img
-                  src={stackTop}
-                  alt="Rajasthan Heritage Week runway"
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                {stackTop && (
+                  <img
+                    src={stackTop}
+                    alt="Rajasthan Heritage Week runway"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
               </figure>
 
               <figure className="relative row-span-2 aspect-[3/5] overflow-hidden bg-ink/5">
-                <img
-                  src={tallImage}
-                  alt="Mega Model Hunt runway"
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                {tallImage && (
+                  <img
+                    src={tallImage}
+                    alt="Mega Model Hunt runway"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
               </figure>
 
               <figure className="relative aspect-square overflow-hidden bg-ink/5">
-                <img
-                  src={stackBottom}
-                  alt="India Men's Fashion Week"
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                {stackBottom && (
+                  <img
+                    src={stackBottom}
+                    alt="India Men's Fashion Week"
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
               </figure>
             </div>
           </motion.div>
