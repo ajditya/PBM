@@ -4,8 +4,21 @@ import type {
   ApplicationStatus,
   InquiryRow,
   InquiryStatus,
+  ModelGalleryRow,
   ModelRow,
+  ModelUpdate,
 } from "./types"
+
+const MODELS_BUCKET = "models"
+
+/**
+ * Stored image paths are bucket-qualified (e.g. "models/amber/cover.webp") so
+ * publicUrl() can prefix the public base directly. Storage `.remove()` / `.list()`,
+ * however, operate on paths RELATIVE to the bucket — strip the leading "models/".
+ */
+function toBucketRelative(path: string): string {
+  return path.replace(/^models\//, "")
+}
 
 /**
  * Admin-only data access. Every call here runs through the SAME supabase client
@@ -108,5 +121,157 @@ export async function updateApplicationStatus(
     .from("model_applications")
     .update({ status })
     .eq("id", id)
+  if (error) throw error
+}
+
+/* ───────── Models manager (Phase 3 Part A — edit only, no uploads) ───────── */
+
+/** A model row plus its gallery image count, for the admin list. */
+export interface AdminModelRow extends ModelRow {
+  gallery_count: number
+}
+
+/**
+ * ALL models — both genders, published AND unpublished (the `models_auth_all`
+ * RLS policy lifts the public `published = true` filter for the admin). Ordered
+ * by sort_order then name, with a gallery count per row.
+ */
+export async function getAdminModels(): Promise<AdminModelRow[]> {
+  const { data, error } = await supabase
+    .from("models")
+    .select("*, model_gallery(count)")
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true })
+
+  if (error) throw error
+  return (data ?? []).map((m) => {
+    const { model_gallery, ...row } = m as ModelRow & {
+      model_gallery: { count: number }[]
+    }
+    return { ...(row as ModelRow), gallery_count: model_gallery?.[0]?.count ?? 0 }
+  })
+}
+
+/** A single model with its full gallery, ordered by sort_order (slide 1 = primary). */
+export interface AdminModelWithGallery extends ModelRow {
+  gallery: ModelGalleryRow[]
+}
+
+export async function getAdminModel(id: string): Promise<AdminModelWithGallery | null> {
+  const { data, error } = await supabase
+    .from("models")
+    .select("*, gallery:model_gallery(*)")
+    .eq("id", id)
+    .maybeSingle()
+
+  if (error) throw error
+  if (!data) return null
+
+  const gallery = [...((data.gallery as ModelGalleryRow[]) ?? [])].sort(
+    (a, b) => a.sort_order - b.sort_order,
+  )
+  return { ...(data as ModelRow), gallery }
+}
+
+/** Update a model's text/stat fields, featured, published, sort_order, board. */
+export async function updateModel(id: string, fields: ModelUpdate): Promise<void> {
+  const { error } = await supabase.from("models").update(fields).eq("id", id)
+  if (error) throw error
+}
+
+/**
+ * Persist a new gallery order: sort_order becomes the array index, so index 0
+ * is the primary image the public model page shows as slide 1. Scoped to the
+ * model so a stale id can't touch another model's rows.
+ */
+export async function updateGalleryOrder(
+  modelId: string,
+  orderedIds: string[],
+): Promise<void> {
+  const results = await Promise.all(
+    orderedIds.map((id, index) =>
+      supabase
+        .from("model_gallery")
+        .update({ sort_order: index })
+        .eq("id", id)
+        .eq("model_id", modelId),
+    ),
+  )
+  const failed = results.find((r) => r.error)
+  if (failed?.error) throw failed.error
+}
+
+/**
+ * Delete one gallery image: remove the storage object FIRST, then the row. If
+ * the storage delete fails we throw before touching the row, so nothing is half
+ * deleted and the admin can retry cleanly — no orphaned DB row pointing at a
+ * missing file, no orphaned file with no row.
+ */
+export async function deleteGalleryImage(
+  galleryId: string,
+  imagePath: string,
+): Promise<void> {
+  const { error: storageErr } = await supabase.storage
+    .from(MODELS_BUCKET)
+    .remove([toBucketRelative(imagePath)])
+  if (storageErr) throw storageErr
+
+  const { error } = await supabase.from("model_gallery").delete().eq("id", galleryId)
+  if (error) throw error
+}
+
+/** List every storage object under models/{slug}/ (root + one level of subfolders). */
+async function listModelObjects(slug: string): Promise<string[]> {
+  const out: string[] = []
+  const { data: top } = await supabase.storage
+    .from(MODELS_BUCKET)
+    .list(slug, { limit: 1000 })
+
+  for (const item of top ?? []) {
+    // Supabase represents subfolders as entries with a null id.
+    if (item.id === null) {
+      const { data: sub } = await supabase.storage
+        .from(MODELS_BUCKET)
+        .list(`${slug}/${item.name}`, { limit: 1000 })
+      for (const f of sub ?? []) {
+        if (f.id !== null) out.push(`${slug}/${item.name}/${f.name}`)
+      }
+    } else {
+      out.push(`${slug}/${item.name}`)
+    }
+  }
+  return out
+}
+
+/**
+ * Delete a model and ALL of its storage. The model_gallery FK is ON DELETE
+ * CASCADE, so deleting the row removes its gallery rows automatically — but
+ * storage is NOT cascaded, so we remove the objects explicitly first. We union
+ * the DB-known paths (cover + gallery rows) with a folder sweep of
+ * models/{slug}/ to catch anything not tracked in a row. Destructive.
+ */
+export async function deleteModel(
+  model: Pick<ModelRow, "id" | "slug" | "cover_image">,
+): Promise<void> {
+  const { data: galleryRows } = await supabase
+    .from("model_gallery")
+    .select("image_path")
+    .eq("model_id", model.id)
+
+  const known = [model.cover_image, ...(galleryRows ?? []).map((r) => r.image_path)]
+    .filter((p): p is string => !!p)
+    .map(toBucketRelative)
+
+  const swept = await listModelObjects(model.slug)
+  const paths = Array.from(new Set([...known, ...swept]))
+
+  if (paths.length > 0) {
+    const { error: storageErr } = await supabase.storage
+      .from(MODELS_BUCKET)
+      .remove(paths)
+    if (storageErr) throw storageErr
+  }
+
+  const { error } = await supabase.from("models").delete().eq("id", model.id)
   if (error) throw error
 }

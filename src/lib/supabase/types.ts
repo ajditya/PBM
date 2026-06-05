@@ -310,6 +310,7 @@ export type Database = {
 
 /* ───────── Convenience aliases (hand-added) ───────── */
 export type ModelRow = Database["public"]["Tables"]["models"]["Row"]
+export type ModelUpdate = Database["public"]["Tables"]["models"]["Update"]
 export type ModelGalleryRow = Database["public"]["Tables"]["model_gallery"]["Row"]
 export type EventRow = Database["public"]["Tables"]["events"]["Row"]
 export type InquiryRow = Database["public"]["Tables"]["inquiries"]["Row"]

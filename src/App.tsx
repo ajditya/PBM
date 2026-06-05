@@ -17,6 +17,7 @@ import AdminLogin from "@/pages/admin/AdminLogin"
 import AdminResetPassword from "@/pages/admin/AdminResetPassword"
 import AdminHome from "@/pages/admin/AdminHome"
 import Inbox from "@/pages/admin/Inbox"
+import ModelsManager from "@/pages/admin/ModelsManager"
 import ComingSoon from "@/pages/admin/ComingSoon"
 
 export default function App() {
@@ -46,7 +47,7 @@ export default function App() {
         <Route element={<AdminLayout />}>
           <Route index element={<AdminHome />} />
           <Route path="inbox" element={<Inbox />} />
-          <Route path="models" element={<ComingSoon section="Models" />} />
+          <Route path="models" element={<ModelsManager />} />
           <Route path="events" element={<ComingSoon section="Events" />} />
           <Route path="media" element={<ComingSoon section="Media" />} />
           <Route path="*" element={<ComingSoon section="Not found" />} />
