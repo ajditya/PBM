@@ -4,6 +4,10 @@ import {
   getAdminModel,
   updateGalleryOrder,
   deleteGalleryImage,
+  setModelCover,
+  addModelGalleryImage,
+  maxGalleryFileIndex,
+  publicUrl,
   type AdminModelWithGallery,
   type ModelGalleryRow,
   type ModelGender,
@@ -15,6 +19,11 @@ import { toast } from "@/hooks/useToast"
 import { Input } from "@/components/ui/input"
 import AdminToggle from "@/components/admin/AdminToggle"
 import GalleryManager from "@/components/admin/GalleryManager"
+import {
+  compressAndUpload,
+  UploadList,
+  type UploadItem,
+} from "@/components/admin/uploads"
 
 type FormState = {
   name: string
@@ -115,11 +124,16 @@ export default function ModelEditor({
   const [confirmName, setConfirmName] = useState("")
   const [dangerOpen, setDangerOpen] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [coverPath, setCoverPath] = useState<string | null>(null)
+  const [coverBust, setCoverBust] = useState(0)
+  const [coverItem, setCoverItem] = useState<UploadItem | null>(null)
+  const [galleryItems, setGalleryItems] = useState<UploadItem[]>([])
 
   useEffect(() => {
     if (model) {
       setForm(toForm(model))
       setGallery(model.gallery)
+      setCoverPath(model.cover_image)
     }
   }, [model])
 
@@ -186,6 +200,53 @@ export default function ModelEditor({
     }
   }
 
+  async function handleReplaceCover(file: File) {
+    setCoverItem({ key: "cover", name: file.name, status: "queued" })
+    const ok = await compressAndUpload(
+      file,
+      async (webp) => {
+        const path = await setModelCover({ id: m.id, slug: m.slug }, webp)
+        setCoverPath(path)
+        setCoverBust(Date.now()) // bust the CDN cache for the same-path cover
+      },
+      (patch) => setCoverItem((it) => (it ? { ...it, ...patch } : it)),
+    )
+    if (!ok) toast({ variant: "error", message: "Couldn't upload the cover." })
+  }
+
+  async function handleAddGallery(files: File[]) {
+    if (files.length === 0) return
+    const base = maxGalleryFileIndex(gallery) // next filenames continue from here
+    const startLen = gallery.length
+    setGalleryItems(
+      files.map((f, i) => ({ key: `add-${base + 1 + i}`, name: f.name, status: "queued" })),
+    )
+
+    let added = 0
+    for (let i = 0; i < files.length; i++) {
+      const fileIndex = base + 1 + i
+      const ok = await compressAndUpload(
+        files[i],
+        async (webp) => {
+          const row = await addModelGalleryImage(
+            { id: m.id, slug: m.slug },
+            webp,
+            fileIndex,
+            startLen + i, // append after existing images
+          )
+          setGallery((g) => [...g, row])
+          added++
+        },
+        (patch) =>
+          setGalleryItems((list) =>
+            list.map((it) => (it.key === `add-${fileIndex}` ? { ...it, ...patch } : it)),
+          ),
+      )
+      if (!ok) toast({ variant: "error", message: `Couldn't upload ${files[i].name}.` })
+    }
+    if (added > 0) onGalleryCountChange(m.id, startLen + added)
+  }
+
   async function handleDeleteModel() {
     if (deleting) return
     setDeleting(true)
@@ -209,6 +270,41 @@ export default function ModelEditor({
     <div className="flex h-full flex-col overflow-y-auto px-8 py-10">
       <p className="pbm-eyebrow-mute mb-4">Edit model</p>
       <h2 className="pbm-display-xs mb-8">{m.name}</h2>
+
+      {/* Cover */}
+      <div className="mb-8 flex items-center gap-4 border-b border-hairline pb-6">
+        <span className="h-20 w-16 shrink-0 overflow-hidden bg-ink/5">
+          {coverPath && (
+            <img
+              src={publicUrl(coverPath) + (coverBust ? `?t=${coverBust}` : "")}
+              alt=""
+              draggable={false}
+              className="h-full w-full object-cover"
+            />
+          )}
+        </span>
+        <div className="flex flex-col gap-1">
+          <span className="pbm-meta-label">Cover</span>
+          <label className="pbm-link cursor-pointer text-ink">
+            {coverPath ? "Replace cover…" : "Add cover…"}
+            <input
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (f) handleReplaceCover(f)
+                e.target.value = ""
+              }}
+            />
+          </label>
+          {coverItem && coverItem.status !== "done" && (
+            <span className="pbm-meta-label capitalize text-mute">
+              {coverItem.status}…
+            </span>
+          )}
+        </div>
+      </div>
 
       {/* Fields */}
       <div className="flex flex-col gap-6">
@@ -278,11 +374,27 @@ export default function ModelEditor({
       <p className="pbm-meta-label mb-4 normal-case tracking-normal text-mute">
         Drag to reorder · the top image is the primary (slide 1) on the site.
       </p>
-      <GalleryManager
-        gallery={gallery}
-        onReorderCommit={handleReorder}
-        onDeleteImage={handleDeleteImage}
-      />
+      <label className="pbm-link mb-2 inline-flex cursor-pointer text-ink">
+        Add images…
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          className="sr-only"
+          onChange={(e) => {
+            handleAddGallery(Array.from(e.target.files ?? []))
+            e.target.value = ""
+          }}
+        />
+      </label>
+      <UploadList items={galleryItems} />
+      <div className="mt-4">
+        <GalleryManager
+          gallery={gallery}
+          onReorderCommit={handleReorder}
+          onDeleteImage={handleDeleteImage}
+        />
+      </div>
 
       {/* Danger zone */}
       <div className="mt-14 border-t border-error/40 pt-6">

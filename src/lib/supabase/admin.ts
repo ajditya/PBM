@@ -5,6 +5,7 @@ import type {
   InquiryRow,
   InquiryStatus,
   ModelGalleryRow,
+  ModelInsert,
   ModelRow,
   ModelUpdate,
 } from "./types"
@@ -274,4 +275,95 @@ export async function deleteModel(
 
   const { error } = await supabase.from("models").delete().eq("id", model.id)
   if (error) throw error
+}
+
+/* ───────── Models manager (Phase 3 Part B — create + image uploads) ───────── */
+
+/** Insert a new model row and return its id + slug for the image-upload step. */
+export async function createModel(
+  fields: ModelInsert,
+): Promise<{ id: string; slug: string }> {
+  const { data, error } = await supabase
+    .from("models")
+    .insert(fields)
+    .select("id, slug")
+    .single()
+  if (error) throw error
+  return { id: data.id, slug: data.slug }
+}
+
+/**
+ * Upload a model's cover. The blob is ALREADY the compressed WebP (compression
+ * happens client-side before this call). Stored at models/{slug}/cover.webp and
+ * the bucket-qualified path is written back to the row. upsert replaces an
+ * existing cover at the same path.
+ */
+export async function setModelCover(
+  model: { id: string; slug: string },
+  webp: Blob,
+): Promise<string> {
+  const rel = `${model.slug}/cover.webp`
+  const { error: upErr } = await supabase.storage
+    .from(MODELS_BUCKET)
+    .upload(rel, webp, { contentType: "image/webp", upsert: true })
+  if (upErr) throw upErr
+
+  const path = `${MODELS_BUCKET}/${rel}`
+  const { error } = await supabase
+    .from("models")
+    .update({ cover_image: path })
+    .eq("id", model.id)
+  if (error) throw error
+  return path
+}
+
+/**
+ * Upload one gallery image (already-compressed WebP) to
+ * models/{slug}/gallery/{fileIndex}.webp and insert its row at `sortOrder`
+ * (0 = primary / slide 1). Returns the inserted row.
+ */
+export async function addModelGalleryImage(
+  model: { id: string; slug: string },
+  webp: Blob,
+  fileIndex: number,
+  sortOrder: number,
+): Promise<ModelGalleryRow> {
+  const rel = `${model.slug}/gallery/${fileIndex}.webp`
+  const { error: upErr } = await supabase.storage
+    .from(MODELS_BUCKET)
+    .upload(rel, webp, { contentType: "image/webp", upsert: true })
+  if (upErr) throw upErr
+
+  const image_path = `${MODELS_BUCKET}/${rel}`
+  const { data, error } = await supabase
+    .from("model_gallery")
+    .insert({ model_id: model.id, image_path, sort_order: sortOrder })
+    .select("*")
+    .single()
+  if (error) throw error
+  return data as ModelGalleryRow
+}
+
+/** Highest numeric gallery filename in use, so new uploads don't collide. */
+export function maxGalleryFileIndex(gallery: ModelGalleryRow[]): number {
+  let max = 0
+  for (const g of gallery) {
+    const m = g.image_path.match(/\/gallery\/(\d+)\.webp$/)
+    if (m) max = Math.max(max, Number(m[1]))
+  }
+  return max
+}
+
+/** Total bytes + object count in the public `models` bucket (admin usage gauge). */
+export async function getModelsBucketUsage(): Promise<{
+  totalBytes: number
+  objectCount: number
+}> {
+  const { data, error } = await supabase.rpc("models_bucket_usage")
+  if (error) throw error
+  const row = data?.[0]
+  return {
+    totalBytes: Number(row?.total_bytes ?? 0),
+    objectCount: Number(row?.object_count ?? 0),
+  }
 }

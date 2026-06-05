@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import {
   getAdminModels,
+  getModelsBucketUsage,
   updateModel,
   deleteModel,
   publicUrl,
@@ -11,26 +12,47 @@ import {
 } from "@/lib/supabase"
 import { useAsyncData } from "@/hooks/useAsyncData"
 import { toast } from "@/hooks/useToast"
+import { formatBytes } from "@/lib/image-compress"
 import { cn } from "@/lib/utils"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import ModelEditor from "@/components/admin/ModelEditor"
+import ModelCreate from "@/components/admin/ModelCreate"
+
+const TIER_BYTES = 1024 * 1024 * 1024 // 1 GB free tier
 
 export default function ModelsManager() {
   const { data, loading, error } = useAsyncData(() => getAdminModels(), [])
   const [models, setModels] = useState<AdminModelRow[]>([])
+  const [usage, setUsage] = useState<{ totalBytes: number; objectCount: number } | null>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [createOpen, setCreateOpen] = useState(false)
 
   useEffect(() => {
     if (data) setModels(data)
   }, [data])
 
-  // Optimistic field save: merge into the list immediately; revert if the write
-  // fails (the editor surfaces the toast on the thrown error).
+  const loadUsage = useCallback(async () => {
+    try {
+      setUsage(await getModelsBucketUsage())
+    } catch {
+      /* non-critical; leave previous value */
+    }
+  }, [])
+  useEffect(() => {
+    loadUsage()
+  }, [loadUsage])
+
+  const refreshModels = useCallback(async () => {
+    try {
+      setModels(await getAdminModels())
+    } catch {
+      /* keep current list */
+    }
+  }, [])
+
   async function handleSaveFields(id: string, fields: ModelUpdate) {
     const prev = models
-    setModels((list) =>
-      list.map((m) => (m.id === id ? { ...m, ...fields } : m)),
-    )
+    setModels((list) => list.map((m) => (m.id === id ? { ...m, ...fields } : m)))
     try {
       await updateModel(id, fields)
     } catch (e) {
@@ -46,18 +68,48 @@ export default function ModelsManager() {
     setModels((list) => list.filter((m) => m.id !== model.id))
     setSelectedId(null)
     toast({ message: `Deleted ${model.name}.` })
+    loadUsage()
   }
 
   function handleGalleryCountChange(id: string, count: number) {
-    setModels((list) =>
-      list.map((m) => (m.id === id ? { ...m, gallery_count: count } : m)),
-    )
+    setModels((list) => list.map((m) => (m.id === id ? { ...m, gallery_count: count } : m)))
   }
+
+  const usedPct = usage ? Math.min(100, (usage.totalBytes / TIER_BYTES) * 100) : 0
 
   return (
     <div className="px-10 py-12">
-      <p className="pbm-eyebrow mb-4">Models</p>
-      <h1 className="pbm-display-s mb-10">Roster</h1>
+      <div className="mb-10 flex items-start justify-between gap-6">
+        <div>
+          <p className="pbm-eyebrow mb-4">Models</p>
+          <h1 className="pbm-display-s">Roster</h1>
+        </div>
+        <button
+          type="button"
+          onClick={() => setCreateOpen(true)}
+          className="pbm-bar mt-2 w-auto px-6"
+        >
+          New model →
+        </button>
+      </div>
+
+      {/* Storage gauge */}
+      {usage && (
+        <div className="mb-10 max-w-md">
+          <div className="flex items-baseline justify-between">
+            <span className="pbm-meta-label">Models storage</span>
+            <span className="pbm-meta-value">
+              {formatBytes(usage.totalBytes)} / 1 GB · {usage.objectCount} files
+            </span>
+          </div>
+          <div className="mt-2 h-1 w-full bg-ink/10">
+            <div
+              className={cn("h-full", usedPct > 85 ? "bg-error" : "bg-gold")}
+              style={{ width: `${usedPct}%` }}
+            />
+          </div>
+        </div>
+      )}
 
       {loading && <p className="pbm-body text-mute">Loading…</p>}
       {error && (
@@ -120,9 +172,15 @@ export default function ModelsManager() {
         </ul>
       )}
 
+      {/* Edit drawer */}
       <Sheet
         open={selectedId !== null}
-        onOpenChange={(o) => !o && setSelectedId(null)}
+        onOpenChange={(o) => {
+          if (!o) {
+            setSelectedId(null)
+            loadUsage() // gallery add/delete in the editor may have changed storage
+          }
+        }}
       >
         <SheetContent side="right" className="w-full bg-paper text-ink sm:max-w-xl">
           <SheetTitle className="sr-only">Edit model</SheetTitle>
@@ -133,6 +191,22 @@ export default function ModelsManager() {
               onSaveFields={handleSaveFields}
               onDeleteModel={handleDeleteModel}
               onGalleryCountChange={handleGalleryCountChange}
+            />
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Create drawer */}
+      <Sheet open={createOpen} onOpenChange={setCreateOpen}>
+        <SheetContent side="right" className="w-full bg-paper text-ink sm:max-w-xl">
+          <SheetTitle className="sr-only">New model</SheetTitle>
+          {createOpen && (
+            <ModelCreate
+              onDone={() => {
+                setCreateOpen(false)
+                refreshModels()
+                loadUsage()
+              }}
             />
           )}
         </SheetContent>

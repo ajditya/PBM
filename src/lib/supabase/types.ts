@@ -293,7 +293,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      models_bucket_usage: {
+        Args: Record<PropertyKey, never>
+        Returns: { total_bytes: number; object_count: number }[]
+      }
     }
     Enums: {
       application_gender: "female" | "male" | "other"
@@ -310,6 +313,7 @@ export type Database = {
 
 /* ───────── Convenience aliases (hand-added) ───────── */
 export type ModelRow = Database["public"]["Tables"]["models"]["Row"]
+export type ModelInsert = Database["public"]["Tables"]["models"]["Insert"]
 export type ModelUpdate = Database["public"]["Tables"]["models"]["Update"]
 export type ModelGalleryRow = Database["public"]["Tables"]["model_gallery"]["Row"]
 export type EventRow = Database["public"]["Tables"]["events"]["Row"]
