@@ -50,3 +50,6 @@ phase*.png
 .env
 .env.local
 .env.*.local
+
+# One-off admin bootstrap script — never commit (handles the service key)
+scripts/create-admin-user.mjs

@@ -11,9 +11,17 @@ import BecomeAModel from "@/pages/BecomeAModel"
 import Contact from "@/pages/Contact"
 import NotFound from "@/pages/NotFound"
 
+import RequireAuth from "@/components/admin/RequireAuth"
+import AdminLayout from "@/components/admin/AdminLayout"
+import AdminLogin from "@/pages/admin/AdminLogin"
+import AdminResetPassword from "@/pages/admin/AdminResetPassword"
+import AdminHome from "@/pages/admin/AdminHome"
+import ComingSoon from "@/pages/admin/ComingSoon"
+
 export default function App() {
   return (
     <Routes>
+      {/* Public site — unchanged, wrapped in the public Layout (Nav/Footer). */}
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="style-guide" element={<StyleGuide />} />
@@ -27,6 +35,21 @@ export default function App() {
         <Route path="become-a-model" element={<BecomeAModel />} />
         <Route path="contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
+      </Route>
+
+      {/* Admin — sibling tree, no public chrome. Login is unguarded; the rest
+          sits behind RequireAuth and renders inside the admin shell. */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/reset-password" element={<AdminResetPassword />} />
+      <Route path="/admin" element={<RequireAuth />}>
+        <Route element={<AdminLayout />}>
+          <Route index element={<AdminHome />} />
+          <Route path="inbox" element={<ComingSoon section="Inbox" />} />
+          <Route path="models" element={<ComingSoon section="Models" />} />
+          <Route path="events" element={<ComingSoon section="Events" />} />
+          <Route path="media" element={<ComingSoon section="Media" />} />
+          <Route path="*" element={<ComingSoon section="Not found" />} />
+        </Route>
       </Route>
     </Routes>
   )
