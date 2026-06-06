@@ -1,12 +1,15 @@
-import { useMemo } from "react"
+import type { ReactNode } from "react"
 import { Link, useParams } from "react-router-dom"
 import { motion } from "framer-motion"
 
+import { pastDiscoveries, pressLogos } from "@/lib/placeholder-assets"
 import {
-  events,
-  pastDiscoveries,
-  pressLogos,
-} from "@/lib/placeholder-assets"
+  getEventBySlug,
+  getEvents,
+  publicUrl,
+  type EventRow,
+} from "@/lib/supabase"
+import { useAsyncData } from "@/hooks/useAsyncData"
 import {
   easeOutExpo,
   fadeUp,
@@ -14,21 +17,21 @@ import {
   staggerSlow,
   viewportDefault,
 } from "@/lib/motion"
-import EventCard from "@/components/EventCard"
+import EventCard, { eventRowToCard, formatEventDate } from "@/components/EventCard"
 
 /* ────────────────────────────────────────────────────────────
  * E1 — Event Detail page.
  *
- * Universal template:
- *   • Full-bleed hero with title + eyebrow + date
- *   • Sticky meta sidebar (date / location / type) derived from
- *     the `events` entry itself — no hardcoded flagship data
- *   • Short generic "About" block (same voice for every event)
- *   • Press strip + related events
+ * B-phase: the event now comes from Supabase (getEventBySlug). The
+ * core fields — title, type, date, location, cover, description —
+ * are read from the row; the migrated description finally has a
+ * home in the About block. The flagship-only sections (extended
+ * about copy, past discoveries, city schedule) stay as static brand
+ * content and only render when the event's type is "flagship".
  *
- * The flagship-only sections (extended about copy, past discoveries,
- * city schedule) only render when the event's type is "flagship".
- * When the backend lands, per-event fields replace these branches.
+ * A nonexistent or unpublished slug resolves to null (anon RLS),
+ * so we render a real "event not found" state — never a silent
+ * fallback to the wrong event.
  * ──────────────────────────────────────────────────────────── */
 
 const FLAGSHIP_META_ROWS = [
@@ -52,37 +55,72 @@ const FLAGSHIP_CITY_SCHEDULE = [
 const FLAGSHIP_HERO_CITIES =
   "Bengaluru · Mumbai · Delhi · Kolkata · Hyderabad · Chennai"
 
-const TYPE_LABEL: Record<
-  "flagship" | "upcoming" | "past" | "recurring",
-  string
-> = {
+const TYPE_LABEL: Record<EventRow["type"], string> = {
   flagship: "Flagship",
-  upcoming: "Upcoming",
-  past: "Past",
-  recurring: "Recurring",
+  property: "Property",
+}
+
+/** Centered states (loading / not found) reuse the page chrome height. */
+function CenteredState({ children }: { children: ReactNode }) {
+  return (
+    <main className="bg-paper text-ink">
+      <div className="mx-auto flex min-h-[70vh] w-full max-w-[1600px] flex-col items-center justify-center px-6 text-center sm:px-10 lg:px-14">
+        {children}
+      </div>
+    </main>
+  )
 }
 
 export default function EventDetail() {
   const { slug = "" } = useParams()
-  const event = useMemo(
-    () => events.find((e) => e.slug === slug) ?? events[0],
+  const { data: event, loading, error } = useAsyncData(
+    () => getEventBySlug(slug),
     [slug],
   )
+  // Related events come from the published set; current event filtered out.
+  const { data: allEvents } = useAsyncData(getEvents, [])
+
+  if (loading) {
+    return (
+      <CenteredState>
+        <p className="pbm-eyebrow-mute animate-pulse">Loading…</p>
+      </CenteredState>
+    )
+  }
+
+  // Anon RLS already hides unpublished rows, so null = not found / unpublished.
+  if (error || !event) {
+    return (
+      <CenteredState>
+        <p className="pbm-eyebrow-mute mb-6">Event not found</p>
+        <h1 className="pbm-display-m mb-10">This event isn’t available.</h1>
+        <Link to="/events" className="pbm-link text-ink">
+          Back to all events <span aria-hidden>→</span>
+        </Link>
+      </CenteredState>
+    )
+  }
 
   const isFlagship = event.type === "flagship"
   const eyebrow = isFlagship
     ? "Flagship · 23rd Edition"
-    : `${TYPE_LABEL[event.type]} · Prasad Bidapa Associates`
+    : "Prasad Bidapa Associates · Since 1985"
   const [titleLine1, ...titleRest] = event.title.split(" ")
   const titleLine2 = titleRest.join(" ")
 
-  const related = events.filter((e) => e.slug !== event.slug).slice(0, 3)
+  const heroDate = isFlagship
+    ? "March — June 2026"
+    : formatEventDate(event.event_date)
+  const heroCities = isFlagship ? FLAGSHIP_HERO_CITIES : event.location ?? ""
 
-  // Universal meta rows for non-flagship events — derived from the
-  // data we already have on each event entry.
+  const related = (allEvents ?? [])
+    .filter((e) => e.slug !== event.slug)
+    .slice(0, 3)
+
+  // Universal meta rows for non-flagship events, derived from the row.
   const universalMetaRows = [
-    { label: "Date", value: event.date },
-    { label: "Location", value: event.city },
+    { label: "Date", value: formatEventDate(event.event_date) || "—" },
+    { label: "Location", value: event.location ?? "—" },
     { label: "Category", value: TYPE_LABEL[event.type] },
     { label: "Production", value: "Prasad Bidapa Associates" },
   ] as const
@@ -94,14 +132,16 @@ export default function EventDetail() {
       {/* ─── Hero (72vh) ─── */}
       <section aria-labelledby="event-heading" className="relative w-full">
         <div className="relative h-[72vh] min-h-[560px] w-full overflow-hidden bg-ink">
-          <motion.img
-            initial={{ scale: 1.06, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.6, ease: easeOutExpo }}
-            src={event.cover}
-            alt={`${event.title} hero`}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          {event.cover_image && (
+            <motion.img
+              initial={{ scale: 1.06, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1.6, ease: easeOutExpo }}
+              src={publicUrl(event.cover_image)}
+              alt={`${event.title} hero`}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          )}
           {/* Dark gradient at bottom */}
           <div
             aria-hidden
@@ -133,19 +173,20 @@ export default function EventDetail() {
               )}
             </motion.h1>
 
-            <motion.p
-              variants={fadeUp}
-              className="pbm-eyebrow-mute mt-10 max-w-2xl text-paper/70"
-            >
-              {isFlagship ? FLAGSHIP_HERO_CITIES : event.city}
-            </motion.p>
+            {heroCities && (
+              <motion.p
+                variants={fadeUp}
+                className="pbm-eyebrow-mute mt-10 max-w-2xl text-paper/70"
+              >
+                {heroCities}
+              </motion.p>
+            )}
 
-            <motion.p
-              variants={fadeUp}
-              className="pbm-display-s mt-6 text-gold"
-            >
-              {isFlagship ? "March — June 2026" : event.date}
-            </motion.p>
+            {heroDate && (
+              <motion.p variants={fadeUp} className="pbm-display-s mt-6 text-gold">
+                {heroDate}
+              </motion.p>
+            )}
           </motion.div>
         </div>
       </section>
@@ -185,7 +226,7 @@ export default function EventDetail() {
 
             {/* ── Long-form right column (7 cols, offset 1) ── */}
             <div className="lg:col-span-7 lg:col-start-6">
-              {/* About — generic for non-flagship, extended for flagship */}
+              {/* About — the row's description leads, then editorial context */}
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -202,6 +243,11 @@ export default function EventDetail() {
                   variants={fadeUp}
                   className="pbm-body mt-12 max-w-2xl space-y-7"
                 >
+                  {/* The migrated description gets a home here. */}
+                  {event.description && (
+                    <p className="text-ink">{event.description}</p>
+                  )}
+
                   {isFlagship ? (
                     <>
                       <p>
@@ -346,44 +392,50 @@ export default function EventDetail() {
       </section>
 
       {/* ─── Related events ─── */}
-      <section aria-label="Related events" className="bg-paper">
-        <div className="mx-auto w-full max-w-[1600px] px-6 py-24 sm:px-10 sm:py-32 lg:px-14 lg:py-40">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportDefault}
-            variants={staggerSlow}
-            className="mb-16 sm:mb-20"
-          >
-            <motion.p variants={fadeUp} className="pbm-eyebrow-mute mb-6">
-              On the calendar
-            </motion.p>
-            <motion.h2 variants={fadeUp} className="pbm-display-m">
-              More events.
-            </motion.h2>
-          </motion.div>
+      {related.length > 0 && (
+        <section aria-label="Related events" className="bg-paper">
+          <div className="mx-auto w-full max-w-[1600px] px-6 py-24 sm:px-10 sm:py-32 lg:px-14 lg:py-40">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportDefault}
+              variants={staggerSlow}
+              className="mb-16 sm:mb-20"
+            >
+              <motion.p variants={fadeUp} className="pbm-eyebrow-mute mb-6">
+                On the calendar
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="pbm-display-m">
+                More events.
+              </motion.h2>
+            </motion.div>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportDefault}
-            variants={staggerSlow}
-            className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3 lg:gap-x-10"
-          >
-            {related.map((e, i) => (
-              <motion.div key={e.slug} variants={fadeUp}>
-                <EventCard event={e} index={i + 1} total={related.length} />
-              </motion.div>
-            ))}
-          </motion.div>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={viewportDefault}
+              variants={staggerSlow}
+              className="grid grid-cols-1 gap-x-6 gap-y-16 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-3 lg:gap-x-10"
+            >
+              {related.map((e, i) => (
+                <motion.div key={e.slug} variants={fadeUp}>
+                  <EventCard
+                    event={eventRowToCard(e)}
+                    index={i + 1}
+                    total={related.length}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
 
-          <div className="mt-16 flex justify-center">
-            <Link to="/events" className="pbm-link text-ink">
-              All events <span aria-hidden>→</span>
-            </Link>
+            <div className="mt-16 flex justify-center">
+              <Link to="/events" className="pbm-link text-ink">
+                All events <span aria-hidden>→</span>
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
   )
 }
