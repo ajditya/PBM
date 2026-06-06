@@ -18,6 +18,7 @@ import AdminResetPassword from "@/pages/admin/AdminResetPassword"
 import AdminHome from "@/pages/admin/AdminHome"
 import Inbox from "@/pages/admin/Inbox"
 import ModelsManager from "@/pages/admin/ModelsManager"
+import EventsManager from "@/pages/admin/EventsManager"
 import ComingSoon from "@/pages/admin/ComingSoon"
 
 export default function App() {
@@ -48,7 +49,7 @@ export default function App() {
           <Route index element={<AdminHome />} />
           <Route path="inbox" element={<Inbox />} />
           <Route path="models" element={<ModelsManager />} />
-          <Route path="events" element={<ComingSoon section="Events" />} />
+          <Route path="events" element={<EventsManager />} />
           <Route path="media" element={<ComingSoon section="Media" />} />
           <Route path="*" element={<ComingSoon section="Not found" />} />
         </Route>

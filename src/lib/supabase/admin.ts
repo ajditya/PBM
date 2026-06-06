@@ -2,15 +2,21 @@ import { supabase } from "./client"
 import type {
   ApplicationRow,
   ApplicationStatus,
+  EventInsert,
+  EventRow,
+  EventUpdate,
   InquiryRow,
   InquiryStatus,
+  Json,
   ModelGalleryRow,
   ModelInsert,
   ModelRow,
   ModelUpdate,
 } from "./types"
+import type { MindBodySoulContent } from "@/lib/mind-body-soul"
 
 const MODELS_BUCKET = "models"
+const EVENTS_BUCKET = "events"
 
 /**
  * Stored image paths are bucket-qualified (e.g. "models/amber/cover.webp") so
@@ -366,4 +372,161 @@ export async function getModelsBucketUsage(): Promise<{
     totalBytes: Number(row?.total_bytes ?? 0),
     objectCount: Number(row?.object_count ?? 0),
   }
+}
+
+/* ───────── Events manager (Phase 4 Part 1) ───────── */
+
+/** Events bucket paths are bucket-qualified ("events/{slug}/cover.webp"); strip for storage ops. */
+function toEventsBucketRelative(path: string): string {
+  return path.replace(/^events\//, "")
+}
+
+/** List every storage object under events/{slug}/ (root + one level of subfolders). */
+async function listEventObjects(slug: string): Promise<string[]> {
+  const out: string[] = []
+  const { data: top } = await supabase.storage
+    .from(EVENTS_BUCKET)
+    .list(slug, { limit: 1000 })
+
+  for (const item of top ?? []) {
+    // Supabase represents subfolders as entries with a null id.
+    if (item.id === null) {
+      const { data: sub } = await supabase.storage
+        .from(EVENTS_BUCKET)
+        .list(`${slug}/${item.name}`, { limit: 1000 })
+      for (const f of sub ?? []) {
+        if (f.id !== null) out.push(`${slug}/${item.name}/${f.name}`)
+      }
+    } else {
+      out.push(`${slug}/${item.name}`)
+    }
+  }
+  return out
+}
+
+/**
+ * ALL events — both types, published AND unpublished (the `events_auth_all` RLS policy lifts
+ * the public `published = true` filter for the admin). Ordered by sort_order then event_date.
+ */
+export async function getAdminEvents(): Promise<EventRow[]> {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("event_date", { ascending: true })
+
+  if (error) throw error
+  return data ?? []
+}
+
+/** A single event by id, or null if not found. */
+export async function getAdminEvent(id: string): Promise<EventRow | null> {
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle()
+
+  if (error) throw error
+  return (data as EventRow) ?? null
+}
+
+/** Insert a new event row and return its id + slug for the cover-upload step. */
+export async function createEvent(
+  fields: EventInsert,
+): Promise<{ id: string; slug: string }> {
+  const { data, error } = await supabase
+    .from("events")
+    .insert(fields)
+    .select("id, slug")
+    .single()
+  if (error) throw error
+  return { id: data.id, slug: data.slug }
+}
+
+/**
+ * Upload an event's cover (already-compressed WebP). Stored at events/{slug}/cover.webp and the
+ * bucket-qualified path is written back to the row. upsert replaces an existing cover.
+ */
+export async function setEventCover(
+  event: { id: string; slug: string },
+  webp: Blob,
+): Promise<string> {
+  const rel = `${event.slug}/cover.webp`
+  const { error: upErr } = await supabase.storage
+    .from(EVENTS_BUCKET)
+    .upload(rel, webp, { contentType: "image/webp", upsert: true })
+  if (upErr) throw upErr
+
+  const path = `${EVENTS_BUCKET}/${rel}`
+  const { error } = await supabase
+    .from("events")
+    .update({ cover_image: path })
+    .eq("id", event.id)
+  if (error) throw error
+  return path
+}
+
+/** Update an event's text/meta fields, type, published, sort_order. */
+export async function updateEvent(id: string, fields: EventUpdate): Promise<void> {
+  const { error } = await supabase.from("events").update(fields).eq("id", id)
+  if (error) throw error
+}
+
+/**
+ * Demote every flagship event EXCEPT `exceptId` to `property`. The public Events page treats
+ * flagship as the single Mega Model Hunt feature block, so only one event may be flagship at a
+ * time — promoting an event to flagship calls this first to keep that invariant (auto-demote).
+ */
+export async function demoteOtherFlagships(exceptId: string): Promise<void> {
+  const { error } = await supabase
+    .from("events")
+    .update({ type: "property" })
+    .eq("type", "flagship")
+    .neq("id", exceptId)
+  if (error) throw error
+}
+
+/**
+ * Delete an event and ALL of its storage. No table FK-references events, so the row delete is
+ * clean — but storage is not cascaded, so we remove objects explicitly first. Union the
+ * DB-known cover path with a folder sweep of events/{slug}/ to catch anything untracked.
+ * Destructive.
+ */
+export async function deleteEvent(
+  event: Pick<EventRow, "id" | "slug" | "cover_image">,
+): Promise<void> {
+  const known = [event.cover_image]
+    .filter((p): p is string => !!p)
+    .map(toEventsBucketRelative)
+
+  const swept = await listEventObjects(event.slug)
+  const paths = Array.from(new Set([...known, ...swept]))
+
+  if (paths.length > 0) {
+    const { error: storageErr } = await supabase.storage
+      .from(EVENTS_BUCKET)
+      .remove(paths)
+    if (storageErr) throw storageErr
+  }
+
+  const { error } = await supabase.from("events").delete().eq("id", event.id)
+  if (error) throw error
+}
+
+/* ───────── Mind · Body · Soul program content (Phase 4 Part 2) ───────── */
+
+/**
+ * Persist the editable Mind · Body · Soul program copy into the `mind_body_soul`
+ * `site_settings` row. Upsert on `key` so it's robust even if the seed migration hasn't run.
+ * Authenticated-only (anon has SELECT on site_settings; the `*_auth_all` policy grants writes).
+ */
+export async function updateMindBodySoul(value: MindBodySoulContent): Promise<void> {
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert(
+      { key: "mind_body_soul", value: value as unknown as Json },
+      { onConflict: "key" },
+    )
+  if (error) throw error
 }

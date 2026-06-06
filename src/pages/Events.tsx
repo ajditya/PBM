@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 
-import { getEvents, publicUrl } from "@/lib/supabase"
+import { getEvents, getMindBodySoul, publicUrl } from "@/lib/supabase"
 import { useAsyncData } from "@/hooks/useAsyncData"
 import { easeOutExpo, fadeUp, staggerSlow, viewportDefault } from "@/lib/motion"
 import EventCard, { eventRowToCard } from "@/components/EventCard"
@@ -36,6 +36,7 @@ function EventCardSkeleton() {
 
 export default function Events() {
   const { data, loading, error } = useAsyncData(getEvents, [])
+  const { data: mbs } = useAsyncData(getMindBodySoul, [])
   const all = data ?? []
   const flagship = all.find((e) => e.type === "flagship") ?? null
   const gridEvents = all.filter((e) => e.type !== "flagship")
@@ -73,7 +74,7 @@ export default function Events() {
       />
 
       {/* ─── Mind · Body · Soul program (dark band) ─── */}
-      <MindBodySoulFeature />
+      <MindBodySoulFeature content={mbs ?? undefined} />
 
       {/* ─── Every other property ─── */}
       <section aria-label="Events & properties" className="bg-paper">
