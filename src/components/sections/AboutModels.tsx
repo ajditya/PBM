@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 
-import { aboutModelsPhotos, modelsServices } from "@/lib/placeholder-assets"
+import { modelsServices } from "@/lib/placeholder-assets"
+import { useSiteMediaList } from "@/lib/site-media-context"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -12,6 +13,8 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
  * ──────────────────────────────────────────────────────────── */
 
 export default function AboutModels() {
+  const photos = useSiteMediaList("about_models_photos")
+
   return (
     <section
       aria-label="The Models"
@@ -87,7 +90,7 @@ export default function AboutModels() {
             }}
             className="order-1 flex flex-col gap-3 lg:order-2 lg:col-span-5 lg:col-start-8"
           >
-            {aboutModelsPhotos.map((src, i) => (
+            {photos.map((src, i) => (
               <motion.figure
                 key={src}
                 variants={{

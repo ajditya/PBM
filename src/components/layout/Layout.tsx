@@ -7,6 +7,7 @@ import PageTransition from "@/components/layout/PageTransition"
 import ScrollToTop from "@/components/layout/ScrollToTop"
 import CookieBanner from "@/components/CookieBanner"
 import { ToastViewport } from "@/components/Toast"
+import { SiteMediaProvider } from "@/lib/site-media-context"
 
 export default function Layout() {
   // Block context menu and drag on every <img>. Purely a deterrent — any
@@ -26,14 +27,16 @@ export default function Layout() {
   }, [])
 
   return (
-    <div className="relative min-h-screen bg-paper text-ink antialiased">
-      <ScrollToTop />
-      <Nav />
-      <Outlet />
-      <Footer />
-      <PageTransition />
-      <CookieBanner />
-      <ToastViewport />
-    </div>
+    <SiteMediaProvider>
+      <div className="relative min-h-screen bg-paper text-ink antialiased">
+        <ScrollToTop />
+        <Nav />
+        <Outlet />
+        <Footer />
+        <PageTransition />
+        <CookieBanner />
+        <ToastViewport />
+      </div>
+    </SiteMediaProvider>
   )
 }

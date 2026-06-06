@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 
-import { aboutAssociatesPhotos, associatesServices } from "@/lib/placeholder-assets"
+import { associatesServices } from "@/lib/placeholder-assets"
+import { useSiteMediaList } from "@/lib/site-media-context"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -12,6 +13,8 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
  * ──────────────────────────────────────────────────────────── */
 
 export default function AboutAssociates() {
+  const photos = useSiteMediaList("about_associates_photos")
+
   return (
     <section
       aria-label="The Associates"
@@ -30,7 +33,7 @@ export default function AboutAssociates() {
             }}
             className="flex flex-col gap-3 lg:col-span-5"
           >
-            {aboutAssociatesPhotos.map((src, i) => (
+            {photos.map((src, i) => (
               <motion.figure
                 key={src}
                 variants={{

@@ -1,5 +1,5 @@
 import { supabase } from "./client"
-import type { EventRow, ModelGalleryRow, ModelGender, ModelRow } from "./types"
+import type { EventRow, Json, ModelGalleryRow, ModelGender, ModelRow } from "./types"
 import {
   DEFAULT_MIND_BODY_SOUL,
   type MindBodySoulContent,
@@ -87,4 +87,17 @@ export async function getMindBodySoul(): Promise<MindBodySoulContent> {
 
   if (error) throw error
   return (data?.value as MindBodySoulContent | undefined) ?? DEFAULT_MIND_BODY_SOUL
+}
+
+/**
+ * Every `site_settings` row as a key → value map, in one query. Powers the
+ * site-media provider (site-media-context.tsx): the table is tiny, so a single
+ * fetch beats one query per consumed slot. Anon RLS allows SELECT.
+ */
+export async function getSiteSettings(): Promise<Record<string, Json>> {
+  const { data, error } = await supabase.from("site_settings").select("key, value")
+  if (error) throw error
+  const map: Record<string, Json> = {}
+  for (const row of data ?? []) map[row.key] = row.value
+  return map
 }

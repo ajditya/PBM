@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 
-import { founderPortrait } from "@/lib/placeholder-assets"
+import { useSiteMedia } from "@/lib/site-media-context"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -12,6 +12,8 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
  * ──────────────────────────────────────────────────────────── */
 
 export default function AboutFounder() {
+  const portrait = useSiteMedia("founder_portrait")
+
   return (
     <section
       aria-label="The Founder"
@@ -96,7 +98,7 @@ export default function AboutFounder() {
           >
             <div className="relative aspect-[3/4] w-full overflow-hidden bg-paper/5">
               <img
-                src={founderPortrait}
+                src={portrait}
                 alt="Prasad Bidapa portrait"
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover grayscale"

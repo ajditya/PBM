@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 
-import { heroVideo } from "@/lib/placeholder-assets"
+import { useSiteMedia, useSiteMediaReady } from "@/lib/site-media-context"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -31,22 +31,42 @@ const headlineChild = {
 }
 
 export default function HomeHero() {
+  // DB-driven with static fallback. The poster paints instantly as the hero's
+  // first frame; the <video> mounts ONCE, after settings settle, with its final
+  // source (static fallback when the row is empty, the uploaded video when set).
+  // No runtime source swap → no static→DB remount on the live site, so a visitor
+  // loads the resolved video exactly once behind the held poster frame.
+  const ready = useSiteMediaReady()
+  const videoSrc = useSiteMedia("hero_video")
+  const poster = useSiteMedia("hero_poster")
+
   return (
     <section
       aria-label="Hero"
       className="relative h-screen w-full overflow-hidden bg-ink text-paper"
     >
-      {/* ─── Background video ─── */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster={heroVideo.poster}
+      {/* ─── Instant poster frame (holds until the video is mounted & ready) ─── */}
+      <img
+        src={poster}
+        alt=""
+        aria-hidden
+        draggable={false}
         className="absolute inset-0 h-full w-full object-cover"
-      >
-        <source src={heroVideo.src} type="video/mp4" />
-      </video>
+      />
+
+      {/* ─── Background video — single mount with its final source ─── */}
+      {ready && (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={poster}
+          className="absolute inset-0 h-full w-full object-cover"
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+      )}
 
       {/* ─── Gradient overlay: bottom 60% → top 20% black ─── */}
       <div

@@ -530,3 +530,129 @@ export async function updateMindBodySoul(value: MindBodySoulContent): Promise<vo
     )
   if (error) throw error
 }
+
+/* ───────── Site media (Phase B — Media manager) ───────── */
+
+const SITE_BUCKET = "site"
+
+/** Site bucket paths are bucket-qualified ("site/hero/poster.webp"); strip for storage ops. */
+function toSiteBucketRelative(path: string): string {
+  return path.replace(/^site\//, "")
+}
+
+/**
+ * Upsert any `site_settings` row by key — generalizes updateMindBodySoul. The
+ * Media manager writes media-slot values ({url} / {urls}) through this. Upsert
+ * on `key` so it works even if the seed migration hasn't run. Authenticated-only.
+ */
+export async function setSiteSetting(key: string, value: Json): Promise<void> {
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ key, value }, { onConflict: "key" })
+  if (error) throw error
+}
+
+/**
+ * Reset a media slot to `empty` so the public site reverts to its static
+ * default, and best-effort remove the now-orphaned storage object(s) so the
+ * `site` bucket doesn't accumulate dead files. A failed storage delete is
+ * swallowed — a missing object must never block resetting the row.
+ */
+export async function clearSiteMedia(
+  key: string,
+  empty: Json,
+  storedPaths: string[] = [],
+): Promise<void> {
+  const rels = storedPaths.filter(Boolean).map(toSiteBucketRelative)
+  if (rels.length > 0) {
+    await supabase.storage.from(SITE_BUCKET).remove(rels)
+  }
+  await setSiteSetting(key, empty)
+}
+
+/**
+ * Upload a single site image slot (already-compressed WebP, like setModelCover)
+ * to site/{storagePath}.webp and write {"url": path} into its site_settings row.
+ */
+export async function setSiteImageSlot(
+  slot: { key: string; storagePath: string },
+  webp: Blob,
+): Promise<string> {
+  const rel = `${slot.storagePath}.webp`
+  const { error: upErr } = await supabase.storage
+    .from(SITE_BUCKET)
+    .upload(rel, webp, { contentType: "image/webp", upsert: true })
+  if (upErr) throw upErr
+
+  const path = `${SITE_BUCKET}/${rel}`
+  await setSiteSetting(slot.key, { url: path })
+  return path
+}
+
+/**
+ * Write one image into a multi-image slot at `index` (0-based), merging into the
+ * existing ordered urls array. Stored at site/{storagePath}/{index + 1}.webp.
+ * Returns the new array (also persisted).
+ */
+export async function setSiteImageSlotItem(
+  slot: { key: string; storagePath: string },
+  index: number,
+  webp: Blob,
+  currentUrls: string[],
+): Promise<string[]> {
+  const rel = `${slot.storagePath}/${index + 1}.webp`
+  const { error: upErr } = await supabase.storage
+    .from(SITE_BUCKET)
+    .upload(rel, webp, { contentType: "image/webp", upsert: true })
+  if (upErr) throw upErr
+
+  const next = [...currentUrls]
+  next[index] = `${SITE_BUCKET}/${rel}`
+  await setSiteSetting(slot.key, { urls: next })
+  return next
+}
+
+/**
+ * Reset ONE position of a multi-image slot to empty (so it reverts to its static
+ * default) and remove the orphaned object. The position is blanked in place — the
+ * array keeps its length so later positions don't shift. Returns the new array.
+ */
+export async function clearSiteImageSlotItem(
+  slot: { key: string },
+  index: number,
+  currentUrls: string[],
+): Promise<string[]> {
+  const target = currentUrls[index]
+  if (target) {
+    await supabase.storage.from(SITE_BUCKET).remove([toSiteBucketRelative(target)])
+  }
+  const next = [...currentUrls]
+  next[index] = ""
+  await setSiteSetting(slot.key, { urls: next })
+  return next
+}
+
+/**
+ * Upload a site VIDEO slot RAW — NO compression (the WebP image path would
+ * destroy the video). The hero video is ≈14 MB, under the `site` bucket /
+ * project size limit. Stored at site/{storagePath}.{mp4|webm}; {"url": path}
+ * written to the row.
+ */
+export async function setSiteVideoSlot(
+  slot: { key: string; storagePath: string },
+  file: File,
+): Promise<string> {
+  const ext = file.name.toLowerCase().endsWith(".webm") ? "webm" : "mp4"
+  const rel = `${slot.storagePath}.${ext}`
+  const { error: upErr } = await supabase.storage
+    .from(SITE_BUCKET)
+    .upload(rel, file, {
+      contentType: file.type || "video/mp4",
+      upsert: true,
+    })
+  if (upErr) throw upErr
+
+  const path = `${SITE_BUCKET}/${rel}`
+  await setSiteSetting(slot.key, { url: path })
+  return path
+}
