@@ -144,7 +144,7 @@ export default function ModelsManager() {
                 <span className="min-w-0">
                   <span className="pbm-meta-value block truncate">{m.name}</span>
                   <span className="pbm-meta-label mt-1 block truncate normal-case tracking-normal text-mute">
-                    {m.gender} · {m.board ?? "—"} · {m.gallery_count} image
+                    {m.gender} · {m.gallery_count} image
                     {m.gallery_count === 1 ? "" : "s"}
                   </span>
                 </span>

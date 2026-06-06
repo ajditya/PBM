@@ -26,11 +26,11 @@ import InquiryDialog, {
  * unchanged; board renders upper-cased by the eyebrow style.
  * ──────────────────────────────────────────────────────────── */
 
-const STAT_ROWS: ReadonlyArray<{ label: string; key: keyof ModelRow }> = [
-  { label: "Height", key: "height" },
-  { label: "Bust", key: "bust" },
-  { label: "Waist", key: "waist" },
-  { label: "Hips", key: "hips" },
+const STAT_ROWS: ReadonlyArray<{ label: string; key: keyof ModelRow; unit?: true }> = [
+  { label: "Height", key: "height", unit: true },
+  { label: "Bust", key: "bust", unit: true },
+  { label: "Waist", key: "waist", unit: true },
+  { label: "Hips", key: "hips", unit: true },
   { label: "Hair", key: "hair" },
   { label: "Eyes", key: "eyes" },
   { label: "Shoes", key: "shoes" },
@@ -131,9 +131,7 @@ export default function ModelDetail() {
             transition={{ duration: 1.0, ease: easeOutExpo }}
             className="order-1 flex flex-col lg:col-span-5 lg:col-start-1 lg:row-start-1"
           >
-            <p className="pbm-eyebrow-mute mb-10">
-              {genderLabel} · {model.board}
-            </p>
+            <p className="pbm-eyebrow-mute mb-10">{genderLabel}</p>
 
             <h1 className="pbm-display-m">
               {first}
@@ -179,13 +177,16 @@ export default function ModelDetail() {
             transition={{ duration: 1.0, ease: easeOutExpo, delay: 0.2 }}
             className="order-4 grid grid-cols-2 gap-x-10 gap-y-5 lg:col-span-5 lg:col-start-1 lg:row-start-3"
           >
-            {STAT_ROWS.map(({ label, key }) => (
+            {STAT_ROWS.map(({ label, key, unit }) => (
               <div
                 key={label}
                 className="flex items-baseline justify-between gap-4 border-b border-hairline pb-3"
               >
                 <dt className="pbm-meta-label">{label}</dt>
-                <dd className="pbm-meta-value">{model[key] ?? "—"}</dd>
+                <dd className="pbm-meta-value">
+                  {model[key] ?? "—"}
+                  {model[key] && unit ? ` ${model.measurements_unit ?? ""}` : ""}
+                </dd>
               </div>
             ))}
           </motion.dl>

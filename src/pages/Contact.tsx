@@ -138,105 +138,27 @@ function ContactSplit() {
           </div>
         </motion.div>
 
-        {/* ── Right — monochrome SVG map ── */}
+        {/* ── Right — embedded studio map ── */}
         <div className="relative min-h-[420px] border-t border-hairline lg:min-h-0 lg:border-l lg:border-t-0">
-          <MonoMap />
+          <StudioMap />
         </div>
       </div>
     </section>
   )
 }
 
-/* ─── Hand-drawn monochrome map of Bengaluru with a single ink pin ─── */
-function MonoMap() {
+/* ─── Embedded Google map of the Prasad Bidapa Associates studio ─── */
+function StudioMap() {
   return (
-    <svg
-      viewBox="0 0 800 800"
-      preserveAspectRatio="xMidYMid slice"
-      role="img"
-      aria-label="Studio location map"
-      className="absolute inset-0 h-full w-full bg-[#f0f0eb] text-ink"
-    >
-      {/* Light tint base */}
-      <rect width="800" height="800" fill="#f0f0eb" />
-
-      {/* Background road grid — very faint hairlines */}
-      <g stroke="rgba(10,10,10,0.08)" strokeWidth="1" fill="none">
-        {Array.from({ length: 18 }).map((_, i) => (
-          <line
-            key={`h-${i}`}
-            x1="0"
-            y1={i * 50}
-            x2="800"
-            y2={i * 50 - 80}
-          />
-        ))}
-        {Array.from({ length: 18 }).map((_, i) => (
-          <line
-            key={`v-${i}`}
-            x1={i * 50}
-            y1="0"
-            x2={i * 50 + 60}
-            y2="800"
-          />
-        ))}
-      </g>
-
-      {/* Major arterial roads */}
-      <g
-        stroke="rgba(10,10,10,0.22)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        fill="none"
-      >
-        <path d="M 50 580 C 220 540, 360 540, 520 600 S 760 700, 800 720" />
-        <path d="M 0 320 C 180 280, 320 360, 480 320 S 700 240, 800 280" />
-        <path d="M 380 0 C 360 200, 440 360, 400 540 S 360 760, 380 800" />
-        <path d="M 60 0 C 100 200, 60 380, 140 560 S 220 760, 260 800" />
-      </g>
-
-      {/* Secondary roads */}
-      <g
-        stroke="rgba(10,10,10,0.14)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
-      >
-        <path d="M 200 100 C 240 180, 320 200, 400 240 S 540 320, 620 380" />
-        <path d="M 100 480 C 240 520, 360 460, 480 500 S 640 540, 760 500" />
-        <path d="M 540 60 L 720 220" />
-        <path d="M 240 700 L 480 760" />
-      </g>
-
-      {/* Single ink pin marking the studio */}
-      <g transform="translate(400 380)">
-        <circle r="44" fill="rgba(10,10,10,0.06)" />
-        <circle r="22" fill="rgba(10,10,10,0.12)" />
-        <circle r="6" fill="#0a0a0a" />
-        <line
-          x1="0"
-          y1="6"
-          x2="0"
-          y2="40"
-          stroke="#0a0a0a"
-          strokeWidth="1.5"
-        />
-      </g>
-
-      {/* Tracked label */}
-      <text
-        x="400"
-        y="460"
-        textAnchor="middle"
-        fontFamily="Inter, sans-serif"
-        fontSize="11"
-        letterSpacing="3"
-        fill="#0a0a0a"
-        opacity="0.7"
-      >
-        STUDIO · YELAHANKA
-      </text>
-    </svg>
+    <iframe
+      title="Prasad Bidapa Associates studio location"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3885.5423476282454!2d77.56054259999999!3d13.1281532!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae230050ad3915%3A0xf3a9aad61c18d5bf!2sPrasad%20Bidapa%20Associates!5e0!3m2!1sen!2sin!4v1780759807785!5m2!1sen!2sin"
+      className="absolute inset-0 h-full w-full"
+      style={{ border: 0 }}
+      allowFullScreen
+      loading="lazy"
+      referrerPolicy="no-referrer-when-downgrade"
+    />
   )
 }
 

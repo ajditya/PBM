@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 
-import { getEvents, getMindBodySoul, publicUrl } from "@/lib/supabase"
+import { getEvents, getMindBodySoul } from "@/lib/supabase"
 import { useAsyncData } from "@/hooks/useAsyncData"
 import { easeOutExpo, fadeUp, staggerSlow, viewportDefault } from "@/lib/motion"
 import EventCard, { eventRowToCard } from "@/components/EventCard"
@@ -68,10 +68,7 @@ export default function Events() {
       </section>
 
       {/* ─── Flagship feature ─── */}
-      <MegaModelHuntFeature
-        cover={flagship ? publicUrl(flagship.cover_image) : undefined}
-        slug={flagship?.slug}
-      />
+      <MegaModelHuntFeature event={flagship} />
 
       {/* ─── Mind · Body · Soul program (dark band) ─── */}
       <MindBodySoulFeature content={mbs ?? undefined} />

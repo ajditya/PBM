@@ -239,15 +239,21 @@ export default function EventDetail() {
                 <motion.h2 variants={fadeUp} className="pbm-display-m">
                   {isFlagship ? "About the Hunt." : "About the event."}
                 </motion.h2>
+                {/* The event's own description leads as a Playfair standfirst,
+                    so each property reads distinctly — not just a new hero. */}
+                {event.description && (
+                  <motion.p
+                    variants={fadeUp}
+                    className="font-display mt-10 max-w-2xl text-[1.6rem] leading-snug text-ink sm:text-[1.9rem]"
+                  >
+                    {event.description}
+                  </motion.p>
+                )}
+
                 <motion.div
                   variants={fadeUp}
                   className="pbm-body mt-12 max-w-2xl space-y-7"
                 >
-                  {/* The migrated description gets a home here. */}
-                  {event.description && (
-                    <p className="text-ink">{event.description}</p>
-                  )}
-
                   {isFlagship ? (
                     <>
                       <p>

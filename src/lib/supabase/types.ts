@@ -221,6 +221,7 @@ export type Database = {
           hips: string | null
           id: string
           location: string | null
+          measurements_unit: string
           name: string
           published: boolean
           shoes: string | null
@@ -241,6 +242,7 @@ export type Database = {
           hips?: string | null
           id?: string
           location?: string | null
+          measurements_unit?: string
           name: string
           published?: boolean
           shoes?: string | null
@@ -261,6 +263,7 @@ export type Database = {
           hips?: string | null
           id?: string
           location?: string | null
+          measurements_unit?: string
           name?: string
           published?: boolean
           shoes?: string | null

@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Menu, Search } from "lucide-react"
 
 import { useScrolled } from "@/hooks/useScrolled"
+import { useAsyncData } from "@/hooks/useAsyncData"
+import { getModels } from "@/lib/supabase"
 import { easeOutExpo } from "@/lib/motion"
 import { brandLogos } from "@/lib/placeholder-assets"
 import { ModelsDropdown } from "@/components/layout/ModelsDropdown"
@@ -95,6 +97,52 @@ function BrandLogo({
   )
 }
 
+/**
+ * Nav entry that owns the Models dropdown. Clicking it opens the menu (rather
+ * than navigating straight to a roster) and lets the user pick where to go;
+ * hovering opens it too. Mirrors NavItem's underline / active styling.
+ */
+function NavDropdownTrigger({
+  label,
+  active,
+  open,
+  onToggle,
+  onMouseEnter,
+}: {
+  label: string
+  active: boolean
+  open: boolean
+  onToggle: () => void
+  onMouseEnter?: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      onMouseEnter={onMouseEnter}
+      aria-haspopup="menu"
+      aria-expanded={open}
+      className={[
+        "pbm-ui group relative inline-flex h-8 items-center transition-colors duration-500",
+        active ? "text-gold" : "text-paper hover:text-paper",
+      ].join(" ")}
+    >
+      <span>{label}</span>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -bottom-1 h-px origin-left scale-x-0 bg-gold transition-transform duration-500 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100"
+        style={{ transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
+      />
+      {active && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 -bottom-1 h-px bg-gold"
+        />
+      )}
+    </button>
+  )
+}
+
 function NavItem({
   to,
   label,
@@ -147,6 +195,10 @@ export default function Nav() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
 
+  // Live roster powers the dropdown's counts, previews and featured list.
+  const { data: modelsData } = useAsyncData(() => getModels(), [])
+  const models = modelsData ?? []
+
   // The nav is only allowed to be transparent over the homepage hero.
   // Every other route renders the solid dark state from scroll position 0.
   const isHome = location.pathname === "/"
@@ -188,19 +240,28 @@ export default function Nav() {
               aria-label="Primary"
               className="hidden lg:flex items-center gap-9 xl:gap-11"
             >
-              {NAV_LINKS.map((link) => (
-                <NavItem
-                  key={link.to + link.label}
-                  to={link.to}
-                  label={link.label}
-                  end={link.end}
-                  onMouseEnter={
-                    link.hasDropdown
-                      ? () => setDropdownOpen(true)
-                      : () => setDropdownOpen(false)
-                  }
-                />
-              ))}
+              {NAV_LINKS.map((link) =>
+                link.hasDropdown ? (
+                  <NavDropdownTrigger
+                    key={link.to + link.label}
+                    label={link.label}
+                    active={location.pathname.startsWith("/models")}
+                    open={dropdownOpen}
+                    // Open on click (and on hover) instead of navigating; the
+                    // panel closes on mouse-leave or when a link is chosen.
+                    onToggle={() => setDropdownOpen(true)}
+                    onMouseEnter={() => setDropdownOpen(true)}
+                  />
+                ) : (
+                  <NavItem
+                    key={link.to + link.label}
+                    to={link.to}
+                    label={link.label}
+                    end={link.end}
+                    onMouseEnter={() => setDropdownOpen(false)}
+                  />
+                ),
+              )}
             </nav>
 
             {/* ─── Right cluster — search icon + wordmark (desktop) ─── */}
@@ -246,8 +307,8 @@ export default function Nav() {
 
           {/* ─── Models dropdown panel (desktop) ─── */}
           <AnimatePresence>
-            {dropdownOpen && location.pathname !== "/models" && (
-              <ModelsDropdown onClose={closeDropdown} />
+            {dropdownOpen && (
+              <ModelsDropdown models={models} onClose={closeDropdown} />
             )}
           </AnimatePresence>
         </div>

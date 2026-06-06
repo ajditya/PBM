@@ -37,24 +37,25 @@ export default function BecomeAModel() {
           </motion.p>
 
           <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:gap-x-12">
-            {/* Headline — left 6 cols */}
+            {/* Headline — full width so the large display type never collides
+                with the manifesto column on the right. */}
             <motion.h1
               initial={{ opacity: 0, y: 32 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, ease: easeOutExpo, delay: 0.1 }}
-              className="pbm-display-xl lg:col-span-6"
+              className="pbm-display-xl lg:col-span-12"
             >
               Be
               <br />
               Discovered.
             </motion.h1>
 
-            {/* Manifesto — right 5 cols offset down */}
+            {/* Manifesto — sits below the headline, aligned to the right 5 cols */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.0, ease: easeOutExpo, delay: 0.4 }}
-              className="lg:col-span-5 lg:col-start-8 lg:pt-32"
+              className="lg:col-span-5 lg:col-start-8"
             >
               <p className="pbm-body max-w-[40ch]">
                 Mega Model Hunt has discovered Deepika Padukone, Anushka

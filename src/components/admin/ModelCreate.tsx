@@ -24,7 +24,7 @@ type FormState = {
   hair: string
   eyes: string
   location: string
-  board: string
+  measurements_unit: "cm" | "in"
   sort_order: string
   featured: boolean
   published: boolean
@@ -42,7 +42,7 @@ const EMPTY: FormState = {
   hair: "",
   eyes: "",
   location: "",
-  board: "",
+  measurements_unit: "cm",
   sort_order: "0",
   featured: false,
   published: false, // default draft so a model can be prepped before going live
@@ -57,7 +57,6 @@ const TEXT_FIELDS: ReadonlyArray<{ key: keyof FormState; label: string }> = [
   { key: "hair", label: "Hair" },
   { key: "eyes", label: "Eyes" },
   { key: "location", label: "Location" },
-  { key: "board", label: "Board" },
 ]
 
 function slugify(s: string): string {
@@ -83,7 +82,7 @@ function toInsert(f: FormState): ModelInsert {
     hair: orNull(f.hair),
     eyes: orNull(f.eyes),
     location: orNull(f.location),
-    board: orNull(f.board),
+    measurements_unit: f.measurements_unit,
     sort_order: Number(f.sort_order) || 0,
     featured: f.featured,
     published: f.published,
@@ -224,6 +223,21 @@ export default function ModelCreate({ onDone }: { onDone: () => void }) {
           >
             <option value="female">female</option>
             <option value="male">male</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col">
+          <label htmlFor="c-unit" className="pbm-meta-label mb-2">
+            Measurements unit
+          </label>
+          <select
+            id="c-unit"
+            value={form.measurements_unit}
+            onChange={(e) => set("measurements_unit", e.target.value as FormState["measurements_unit"])}
+            className="pbm-ui w-full appearance-none border-b border-ink bg-transparent py-3 text-[0.75rem] capitalize text-ink outline-none focus-visible:border-gold"
+          >
+            <option value="cm">cm</option>
+            <option value="in">inches</option>
           </select>
         </div>
 
