@@ -8,6 +8,9 @@ const SECTIONS = [
   { to: "/admin/models", label: "Models" },
   { to: "/admin/events", label: "Events" },
   { to: "/admin/media", label: "Media" },
+  { to: "/admin/home", label: "Homepage" },
+  { to: "/admin/about", label: "About" },
+  { to: "/admin/team", label: "Team" },
 ] as const
 
 /**

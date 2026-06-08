@@ -20,6 +20,9 @@ import Inbox from "@/pages/admin/Inbox"
 import ModelsManager from "@/pages/admin/ModelsManager"
 import EventsManager from "@/pages/admin/EventsManager"
 import MediaManager from "@/pages/admin/MediaManager"
+import HomeManager from "@/pages/admin/HomeManager"
+import AboutManager from "@/pages/admin/AboutManager"
+import TeamManager from "@/pages/admin/TeamManager"
 import ComingSoon from "@/pages/admin/ComingSoon"
 
 export default function App() {
@@ -52,6 +55,9 @@ export default function App() {
           <Route path="models" element={<ModelsManager />} />
           <Route path="events" element={<EventsManager />} />
           <Route path="media" element={<MediaManager />} />
+          <Route path="home" element={<HomeManager />} />
+          <Route path="about" element={<AboutManager />} />
+          <Route path="team" element={<TeamManager />} />
           <Route path="*" element={<ComingSoon section="Not found" />} />
         </Route>
       </Route>

@@ -585,7 +585,9 @@ export async function setSiteImageSlot(
   if (upErr) throw upErr
 
   const path = `${SITE_BUCKET}/${rel}`
-  await setSiteSetting(slot.key, { url: path })
+  // `v` is a cache-buster: upsert keeps the same path, so without a changing
+  // token the CDN/browser would keep serving the previous image after a replace.
+  await setSiteSetting(slot.key, { url: path, v: Date.now() })
   return path
 }
 
@@ -608,7 +610,8 @@ export async function setSiteImageSlotItem(
 
   const next = [...currentUrls]
   next[index] = `${SITE_BUCKET}/${rel}`
-  await setSiteSetting(slot.key, { urls: next })
+  // Row-level cache-buster (see setSiteImageSlot) — bumped on every item write.
+  await setSiteSetting(slot.key, { urls: next, v: Date.now() })
   return next
 }
 
@@ -653,6 +656,34 @@ export async function setSiteVideoSlot(
   if (upErr) throw upErr
 
   const path = `${SITE_BUCKET}/${rel}`
-  await setSiteSetting(slot.key, { url: path })
+  await setSiteSetting(slot.key, { url: path, v: Date.now() })
   return path
+}
+
+/* ───────── Team members (Phase C — Team manager) ───────── */
+
+/**
+ * Upload a team member's photo (already-compressed WebP) to site/team/{id}.webp
+ * and return the bucket-qualified path. The caller writes the path into the
+ * member object and persists the whole `team_members` row via setSiteSetting.
+ * The id-stable path means a replace overwrites in place (cache-busted by the
+ * `v` token the caller stamps on the member).
+ */
+export async function setTeamMemberImage(id: string, webp: Blob): Promise<string> {
+  const rel = `team/${id}.webp`
+  const { error: upErr } = await supabase.storage
+    .from(SITE_BUCKET)
+    .upload(rel, webp, { contentType: "image/webp", upsert: true })
+  if (upErr) throw upErr
+  return `${SITE_BUCKET}/${rel}`
+}
+
+/**
+ * Best-effort delete of a team member's storage object (on member removal).
+ * A missing/failed delete is swallowed — it must never block the row update.
+ * Only bucket paths ("site/…") are removable; static default paths are ignored.
+ */
+export async function deleteTeamMemberImage(path: string): Promise<void> {
+  if (!path || !path.startsWith(`${SITE_BUCKET}/`)) return
+  await supabase.storage.from(SITE_BUCKET).remove([toSiteBucketRelative(path)])
 }

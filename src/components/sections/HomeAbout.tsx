@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 
-import { founderPortrait } from "@/lib/placeholder-assets"
+import { useSiteContent, useSiteMedia } from "@/lib/site-media-context"
+import { DEFAULT_HOME_COPY } from "@/lib/home-copy"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -12,6 +13,9 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
  * ──────────────────────────────────────────────────────────── */
 
 export default function HomeAbout() {
+  const portrait = useSiteMedia("founder_portrait")
+  const { about } = useSiteContent("home_copy", DEFAULT_HOME_COPY)
+
   return (
     <section
       id="about"
@@ -30,7 +34,7 @@ export default function HomeAbout() {
           >
             <div className="relative aspect-[3/4] w-full overflow-hidden bg-ink/5 lg:aspect-[4/5]">
               <img
-                src={founderPortrait}
+                src={portrait}
                 alt="Prasad Bidapa portrait"
                 loading="lazy"
                 className="absolute inset-0 h-full w-full object-cover grayscale"
@@ -55,43 +59,34 @@ export default function HomeAbout() {
               The Mentor
             </motion.p>
 
-            <motion.h2 variants={fadeUp} className="pbm-display-l">
-              Prasad
-              <br />
-              Bidapa
+            <motion.h2
+              variants={fadeUp}
+              className="pbm-display-l whitespace-pre-line"
+            >
+              {about.heading}
             </motion.h2>
 
             <motion.p
               variants={fadeUp}
               className="pbm-display-s mt-8 text-ink/70"
             >
-              Four decades shaping Indian fashion.
+              {about.subhead}
             </motion.p>
 
             <motion.div
               variants={fadeUp}
               className="pbm-body mt-12 max-w-[42ch] space-y-6"
             >
-              <p>
-                A pioneering force in Indian fashion, Prasad Bidapa has spent
-                decades shaping the country's style landscape through runway
-                direction, talent discovery, and fashion entrepreneurship.
-                Widely regarded as one of the architects of modern fashion
-                presentation in India, he has elevated fashion shows into
-                world-class experiences blending creativity, discipline, and
-                commercial relevance.
-              </p>
-              <p>
-                His influence spans fashion weeks, luxury showcases, pageants,
-                talent platforms, and model development.
-              </p>
+              {about.body.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
             </motion.div>
 
             <motion.blockquote
               variants={fadeUp}
               className="pbm-quote mt-14 max-w-[36ch] border-l border-gold pl-6"
             >
-              "India's master artisans are our national treasures."
+              {about.quote}
             </motion.blockquote>
 
             <motion.div variants={fadeUp} className="mt-12">

@@ -3,6 +3,8 @@ import { motion, useMotionValue } from "framer-motion"
 
 import { getEvents } from "@/lib/supabase"
 import { useAsyncData } from "@/hooks/useAsyncData"
+import { useSiteContent } from "@/lib/site-media-context"
+import { DEFAULT_HOME_COPY } from "@/lib/home-copy"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 import EventCard, { eventRowToCard } from "@/components/EventCard"
 
@@ -31,6 +33,7 @@ export default function HomeEventsScroll() {
   const { data } = useAsyncData(getEvents, [])
   const row = (data ?? []).slice(0, 4)
   const loading = !data
+  const { eventsScroll } = useSiteContent("home_copy", DEFAULT_HOME_COPY)
 
   return (
     <section
@@ -53,7 +56,7 @@ export default function HomeEventsScroll() {
             03 / The Calendar
           </motion.p>
           <motion.h2 variants={fadeUp} className="pbm-display-m">
-            Events.
+            {eventsScroll.heading}
           </motion.h2>
         </motion.div>
       </div>

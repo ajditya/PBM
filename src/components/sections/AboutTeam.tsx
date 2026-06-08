@@ -1,6 +1,8 @@
 import { motion } from "framer-motion"
 
-import { teamMembers } from "@/lib/placeholder-assets"
+import { useSiteContent } from "@/lib/site-media-context"
+import { DEFAULT_ABOUT_COPY } from "@/lib/about-copy"
+import { DEFAULT_TEAM_MEMBERS, teamImageSrc } from "@/lib/team-members"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -13,6 +15,9 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
  * ──────────────────────────────────────────────────────────── */
 
 export default function AboutTeam() {
+  const { team } = useSiteContent("about_copy", DEFAULT_ABOUT_COPY)
+  const { members } = useSiteContent("team_members", DEFAULT_TEAM_MEMBERS)
+
   return (
     <section
       aria-label="The Team"
@@ -38,15 +43,14 @@ export default function AboutTeam() {
             variants={fadeUp}
             className="pbm-display-m lg:col-span-7"
           >
-            The Team.
+            {team.heading}
           </motion.h2>
 
           <motion.p
             variants={fadeUp}
             className="pbm-body max-w-[42ch] lg:col-span-4 lg:col-start-9 lg:pt-6"
           >
-            The people behind the house — runway direction, choreography and
-            talent development, led from the studio in Bengaluru.
+            {team.description}
           </motion.p>
         </motion.div>
 
@@ -61,9 +65,9 @@ export default function AboutTeam() {
           }}
           className="grid grid-cols-1 gap-x-10 gap-y-16 sm:grid-cols-2 sm:gap-y-20 lg:grid-cols-3 lg:gap-x-12"
         >
-          {teamMembers.map((m) => (
+          {members.map((m) => (
             <motion.figure
-              key={m.name}
+              key={m.id}
               variants={{
                 hidden: { opacity: 0, y: 32 },
                 visible: {
@@ -75,12 +79,14 @@ export default function AboutTeam() {
               className="flex flex-col"
             >
               <div className="relative aspect-[4/5] w-full overflow-hidden bg-ink/5">
-                <img
-                  src={m.img}
-                  alt={`${m.name} portrait`}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover grayscale"
-                />
+                {teamImageSrc(m) && (
+                  <img
+                    src={teamImageSrc(m)}
+                    alt={`${m.name} portrait`}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover grayscale"
+                  />
+                )}
               </div>
               <figcaption className="mt-6 flex flex-col">
                 <p className="pbm-display-xs text-ink">{m.name}</p>

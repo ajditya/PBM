@@ -28,6 +28,24 @@ const SECTIONS = [
     description:
       "The site-wide media library. Swap the hero, About, and other imagery or video used across the public site.",
   },
+  {
+    to: "/admin/home",
+    label: "Homepage",
+    description:
+      "Headlines and body copy for the homepage sections — hero, mentor band, and the model/event teasers.",
+  },
+  {
+    to: "/admin/about",
+    label: "About",
+    description:
+      "Headlines and body copy for every section of the About page — hero, models, associates, founder, and team header.",
+  },
+  {
+    to: "/admin/team",
+    label: "Team",
+    description:
+      "The team grid on the About page. Edit details and photos, reorder, and add or remove members.",
+  },
 ]
 
 export default function AdminHome() {

@@ -4,6 +4,8 @@ import AboutAssociates from "@/components/sections/AboutAssociates"
 import AboutFounder from "@/components/sections/AboutFounder"
 import AboutModels from "@/components/sections/AboutModels"
 import AboutTeam from "@/components/sections/AboutTeam"
+import { useSiteContent } from "@/lib/site-media-context"
+import { DEFAULT_ABOUT_COPY } from "@/lib/about-copy"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -17,6 +19,8 @@ import { easeOutExpo } from "@/lib/motion"
  * ──────────────────────────────────────────────────────────── */
 
 function AboutHero() {
+  const { hero } = useSiteContent("about_copy", DEFAULT_ABOUT_COPY)
+
   return (
     <section
       aria-label="About — A house of fashion, talent and craft"
@@ -39,13 +43,9 @@ function AboutHero() {
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: easeOutExpo, delay: 0.1 }}
-            className="pbm-display-l lg:col-span-8"
+            className="pbm-display-l whitespace-pre-line lg:col-span-8"
           >
-            A house of
-            <br />
-            fashion, talent
-            <br />
-            and craft.
+            {hero.headline}
           </motion.h1>
 
           {/* Right-aligned manifesto */}
@@ -55,11 +55,7 @@ function AboutHero() {
             transition={{ duration: 1.0, ease: easeOutExpo, delay: 0.4 }}
             className="lg:col-span-4 lg:col-start-9 lg:pt-12"
           >
-            <p className="pbm-body max-w-[36ch]">
-              Forty years of staging the runway, casting the face and
-              producing the show. One studio, two arms, a single editorial
-              eye on the country's craft and its talent.
-            </p>
+            <p className="pbm-body max-w-[36ch]">{hero.manifesto}</p>
           </motion.div>
         </div>
 

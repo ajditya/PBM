@@ -1,7 +1,8 @@
 import { motion } from "framer-motion"
 
 import { associatesServices } from "@/lib/placeholder-assets"
-import { useSiteMediaList } from "@/lib/site-media-context"
+import { useSiteContent, useSiteMediaList } from "@/lib/site-media-context"
+import { DEFAULT_ABOUT_COPY } from "@/lib/about-copy"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
 
 export default function AboutAssociates() {
   const photos = useSiteMediaList("about_associates_photos")
+  const { associates } = useSiteContent("about_copy", DEFAULT_ABOUT_COPY)
 
   return (
     <section
@@ -80,26 +82,16 @@ export default function AboutAssociates() {
             </motion.p>
 
             <motion.h2 variants={fadeUp} className="pbm-display-m">
-              The Associates.
+              {associates.heading}
             </motion.h2>
 
             <motion.div
               variants={fadeUp}
               className="pbm-body mt-12 max-w-[46ch] space-y-6"
             >
-              <p>
-                Prasad Bidapa Associates is a globally recognised fashion and
-                lifestyle company that has curated and executed premium fashion
-                events across India and around the world. With a legacy built on
-                creativity, credibility, and innovation, the company has worked
-                with leading luxury brands, institutions, designers, and
-                corporate houses to create memorable experiences at scale.
-              </p>
-              <p>
-                From fashion weeks and brand launches to image consulting and
-                specialised showcases, it continues to deliver high-impact
-                concepts that combine style, culture, and commercial excellence.
-              </p>
+              {associates.body.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
             </motion.div>
 
             {/* Services list */}

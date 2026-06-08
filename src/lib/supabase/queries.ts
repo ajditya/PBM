@@ -90,6 +90,24 @@ export async function getMindBodySoul(): Promise<MindBodySoulContent> {
 }
 
 /**
+ * Generic reader for a single editable `site_settings` row (anon-readable).
+ * Returns the stored JSON value typed as `T`, or `fallback` when the row is
+ * missing — so a page renders its default copy until an admin saves. Note this
+ * is a shallow fallback (no deep merge): callers with nested content (page copy)
+ * should spread DEFAULT per-section so newly-added fields stay populated.
+ */
+export async function getSiteContent<T>(key: string, fallback: T): Promise<T> {
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", key)
+    .maybeSingle()
+
+  if (error) throw error
+  return (data?.value as T | undefined) ?? fallback
+}
+
+/**
  * Every `site_settings` row as a key → value map, in one query. Powers the
  * site-media provider (site-media-context.tsx): the table is tiny, so a single
  * fetch beats one query per consumed slot. Anon RLS allows SELECT.

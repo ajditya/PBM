@@ -1,4 +1,5 @@
 import { compressToWebp, formatBytes } from "@/lib/image-compress"
+import { cn } from "@/lib/utils"
 
 /** One file's progress through compress → upload. */
 export type UploadStatus = "queued" | "compressing" | "uploading" | "done" | "error"
@@ -36,6 +37,41 @@ export async function compressAndUpload(
     })
     return false
   }
+}
+
+/** Reusable file-picker styled as an editorial link; clears the input after pick. */
+export function UploadButton({
+  busy,
+  accept,
+  label,
+  onFile,
+}: {
+  busy: boolean
+  accept: string
+  label: string
+  onFile: (file: File) => void
+}) {
+  return (
+    <label
+      className={cn(
+        "pbm-link cursor-pointer self-start text-ink",
+        busy && "pointer-events-none opacity-50",
+      )}
+    >
+      {label}
+      <input
+        type="file"
+        accept={accept}
+        className="sr-only"
+        disabled={busy}
+        onChange={(e) => {
+          const f = e.target.files?.[0]
+          if (f) onFile(f)
+          e.target.value = ""
+        }}
+      />
+    </label>
+  )
 }
 
 /** Per-file progress list with before→after sizes (proof the compression ran). */

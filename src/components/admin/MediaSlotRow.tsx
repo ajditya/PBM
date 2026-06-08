@@ -34,6 +34,15 @@ function storedUrls(value: Json | undefined): string[] {
   return []
 }
 
+/** Read the cache-buster version token out of a slot value, or undefined. */
+function storedVersion(value: Json | undefined): string | number | undefined {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const v = (value as { v?: unknown }).v
+    if (typeof v === "string" || typeof v === "number") return v
+  }
+  return undefined
+}
+
 interface Props {
   slot: SiteMediaSlot
   value: Json | undefined
@@ -61,6 +70,7 @@ function SingleSlot({ slot, value, onChange }: Props) {
   const [busy, setBusy] = useState(false)
 
   const stored = storedUrl(value)
+  const version = storedVersion(value)
   const hasCustom = stored.length > 0
 
   async function handleImage(file: File) {
@@ -70,7 +80,7 @@ function SingleSlot({ slot, value, onChange }: Props) {
       file,
       async (webp) => {
         const path = await setSiteImageSlot(slot, webp)
-        onChange(slot.key, { url: path })
+        onChange(slot.key, { url: path, v: Date.now() })
       },
       (patch) => setItem((it) => (it ? { ...it, ...patch } : it)),
     )
@@ -93,7 +103,7 @@ function SingleSlot({ slot, value, onChange }: Props) {
     })
     try {
       const path = await setSiteVideoSlot(slot, file)
-      onChange(slot.key, { url: path })
+      onChange(slot.key, { url: path, v: Date.now() })
       setItem((it) => (it ? { ...it, status: "done" } : it))
       toast({ message: `${slot.label} updated.` })
     } catch (e) {
@@ -125,7 +135,7 @@ function SingleSlot({ slot, value, onChange }: Props) {
       {slot.kind === "image" ? (
         <span className="h-24 w-20 shrink-0 overflow-hidden bg-ink/5">
           <img
-            src={publicUrl(stored) || (slot.fallback as string)}
+            src={publicUrl(stored, version) || (slot.fallback as string)}
             alt=""
             draggable={false}
             className="h-full w-full object-cover"
@@ -168,6 +178,7 @@ function MultiImageSlot({ slot, value, onChange }: Props) {
   const [busy, setBusy] = useState(false)
 
   const urls = storedUrls(value)
+  const version = storedVersion(value)
   const fallback = slot.fallback as readonly string[]
   const count = slot.count ?? fallback.length
 
@@ -186,7 +197,7 @@ function MultiImageSlot({ slot, value, onChange }: Props) {
       file,
       async (webp) => {
         const next = await setSiteImageSlotItem(slot, index, webp, urls)
-        onChange(slot.key, { urls: next })
+        onChange(slot.key, { urls: next, v: Date.now() })
       },
       (patch) => setItem(index, patch),
     )
@@ -226,7 +237,7 @@ function MultiImageSlot({ slot, value, onChange }: Props) {
             <div key={i} className="flex w-24 flex-col gap-3">
               <span className="h-28 w-24 overflow-hidden bg-ink/5">
                 <img
-                  src={publicUrl(stored) || fallback[i]}
+                  src={publicUrl(stored, version) || fallback[i]}
                   alt=""
                   draggable={false}
                   className="h-full w-full object-cover"

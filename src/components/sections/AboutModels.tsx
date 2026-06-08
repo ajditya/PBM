@@ -1,7 +1,8 @@
 import { motion } from "framer-motion"
 
 import { modelsServices } from "@/lib/placeholder-assets"
-import { useSiteMediaList } from "@/lib/site-media-context"
+import { useSiteContent, useSiteMediaList } from "@/lib/site-media-context"
+import { DEFAULT_ABOUT_COPY } from "@/lib/about-copy"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
 
 export default function AboutModels() {
   const photos = useSiteMediaList("about_models_photos")
+  const { models } = useSiteContent("about_copy", DEFAULT_ABOUT_COPY)
 
   return (
     <section
@@ -40,27 +42,16 @@ export default function AboutModels() {
             </motion.p>
 
             <motion.h2 variants={fadeUp} className="pbm-display-m">
-              The Models.
+              {models.heading}
             </motion.h2>
 
             <motion.div
               variants={fadeUp}
               className="pbm-body mt-12 max-w-[46ch] space-y-6"
             >
-              <p>
-                Prasad Bidapa Models is one of India's most established and
-                trusted model management agencies, dedicated to discovering,
-                developing, and representing exceptional talent. With decades of
-                experience and an unmatched understanding of the industry, the
-                agency has launched successful careers while supplying top-tier
-                models for campaigns, editorials, runway shows, commercials, and
-                brand activations.
-              </p>
-              <p>
-                Known for professionalism, credibility, and quality
-                representation, it continues to be a preferred destination for
-                both talent and leading brands.
-              </p>
+              {models.body.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
             </motion.div>
 
             <motion.ul

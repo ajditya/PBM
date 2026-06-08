@@ -141,9 +141,19 @@ function readUrls(raw: Json | undefined): string[] {
   return []
 }
 
+/** Read the cache-buster version token written on each re-upload (or undefined). */
+function readVersion(raw: Json | undefined): string | number | undefined {
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const v = (raw as { v?: unknown }).v
+    if (typeof v === "string" || typeof v === "number") return v
+  }
+  return undefined
+}
+
 /** Resolve a single image/video slot to a public URL, or its static fallback when empty. */
 export function resolveSingle(map: SiteSettingsMap, slot: SiteMediaSlot): string {
-  return publicUrl(readUrl(map[slot.key])) || (slot.fallback as string)
+  const raw = map[slot.key]
+  return publicUrl(readUrl(raw), readVersion(raw)) || (slot.fallback as string)
 }
 
 /**
@@ -153,12 +163,14 @@ export function resolveSingle(map: SiteSettingsMap, slot: SiteMediaSlot): string
  * blanks a layout cell.
  */
 export function resolveMulti(map: SiteSettingsMap, slot: SiteMediaSlot): string[] {
-  const stored = readUrls(map[slot.key])
+  const raw = map[slot.key]
+  const stored = readUrls(raw)
+  const version = readVersion(raw)
   const fallback = slot.fallback as readonly string[]
   const n = slot.count ?? fallback.length
   const out: string[] = []
   for (let i = 0; i < n; i++) {
-    out.push(publicUrl(stored[i]) || fallback[i] || "")
+    out.push(publicUrl(stored[i], version) || fallback[i] || "")
   }
   return out
 }

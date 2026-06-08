@@ -76,3 +76,38 @@ export function useSiteMediaList(key: string): string[] {
   const slot = slotByKey(key)
   return slot ? resolveMulti(map, slot) : []
 }
+
+/**
+ * Merge stored content over the typed default: objects merge key-by-key (so a
+ * field added to the default later stays populated for old rows), arrays are
+ * replaced wholesale (so removing a paragraph/member shrinks the list), and
+ * primitives take the stored value when present.
+ */
+function mergeContent<T>(fallback: T, stored: unknown): T {
+  if (stored === null || stored === undefined) return fallback
+  if (Array.isArray(fallback) || Array.isArray(stored)) return stored as T
+  if (
+    typeof fallback === "object" &&
+    fallback !== null &&
+    typeof stored === "object"
+  ) {
+    const out: Record<string, unknown> = { ...(fallback as Record<string, unknown>) }
+    const src = stored as Record<string, unknown>
+    for (const k of Object.keys(src)) {
+      out[k] = mergeContent((fallback as Record<string, unknown>)[k], src[k])
+    }
+    return out as T
+  }
+  return stored as T
+}
+
+/**
+ * Resolve an editable content row (e.g. "home_copy", "about_copy",
+ * "team_members") from the same single settings fetch the media hooks use.
+ * Returns the typed default until settings load and merges the stored value
+ * over it — so the public copy renders synchronously with no extra round-trip.
+ */
+export function useSiteContent<T>(key: string, fallback: T): T {
+  const { map } = useContext(SiteMediaContext)
+  return mergeContent(fallback, map[key])
+}

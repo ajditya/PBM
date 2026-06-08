@@ -1,6 +1,11 @@
 import { motion } from "framer-motion"
 
-import { useSiteMedia, useSiteMediaReady } from "@/lib/site-media-context"
+import {
+  useSiteContent,
+  useSiteMedia,
+  useSiteMediaReady,
+} from "@/lib/site-media-context"
+import { DEFAULT_HOME_COPY } from "@/lib/home-copy"
 import { easeOutExpo } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -39,6 +44,7 @@ export default function HomeHero() {
   const ready = useSiteMediaReady()
   const videoSrc = useSiteMedia("hero_video")
   const poster = useSiteMedia("hero_poster")
+  const home = useSiteContent("home_copy", DEFAULT_HOME_COPY)
 
   return (
     <section
@@ -92,11 +98,9 @@ export default function HomeHero() {
 
           <motion.h1
             variants={headlineChild}
-            className="pbm-display-xl text-paper"
+            className="pbm-display-xl whitespace-pre-line text-paper"
           >
-            Faces that
-            <br />
-            define fashion.
+            {home.hero.headline}
           </motion.h1>
 
           <motion.div variants={headlineChild} className="mt-10">

@@ -3,6 +3,8 @@ import { motion } from "framer-motion"
 
 import { getModels, publicUrl } from "@/lib/supabase"
 import { useAsyncData } from "@/hooks/useAsyncData"
+import { useSiteContent } from "@/lib/site-media-context"
+import { DEFAULT_HOME_COPY } from "@/lib/home-copy"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -19,6 +21,7 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
 export default function HomeModelsTeaser() {
   const { data } = useAsyncData(() => getModels(), [])
   const models = data ?? []
+  const { modelsTeaser } = useSiteContent("home_copy", DEFAULT_HOME_COPY)
   const cover = (i: number) => (models[i] ? publicUrl(models[i].cover_image) : "")
   const tallImage = cover(0)
   const stackTop = cover(1)
@@ -48,25 +51,18 @@ export default function HomeModelsTeaser() {
               01 / The Agency
             </motion.p>
 
-            <motion.h2 variants={fadeUp} className="pbm-display-l">
-              Prasad
-              <br />
-              Bidapa
-              <br />
-              Models
+            <motion.h2
+              variants={fadeUp}
+              className="pbm-display-l whitespace-pre-line"
+            >
+              {modelsTeaser.heading}
             </motion.h2>
 
             <motion.p
               variants={fadeUp}
               className="pbm-body-inverse mt-10 max-w-[46ch]"
             >
-              One of India's most established and trusted model management
-              agencies, dedicated to discovering, developing, and representing
-              exceptional talent. With decades of experience, the agency has
-              launched successful careers while supplying top-tier models for
-              campaigns, editorials, runway shows, commercials, and brand
-              activations. Known for professionalism, credibility, and quality
-              representation.
+              {modelsTeaser.body}
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-12">

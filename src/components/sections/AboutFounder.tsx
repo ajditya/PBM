@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 
-import { useSiteMedia } from "@/lib/site-media-context"
+import { useSiteContent, useSiteMedia } from "@/lib/site-media-context"
+import { DEFAULT_ABOUT_COPY } from "@/lib/about-copy"
 import { fadeUp, viewportDefault } from "@/lib/motion"
 
 /* ────────────────────────────────────────────────────────────
@@ -13,6 +14,7 @@ import { fadeUp, viewportDefault } from "@/lib/motion"
 
 export default function AboutFounder() {
   const portrait = useSiteMedia("founder_portrait")
+  const { founder } = useSiteContent("about_copy", DEFAULT_ABOUT_COPY)
 
   return (
     <section
@@ -39,7 +41,7 @@ export default function AboutFounder() {
             </motion.p>
 
             <motion.h2 variants={fadeUp} className="pbm-display-l">
-              Prasad Bidapa.
+              {founder.heading}
             </motion.h2>
 
             <motion.div
@@ -52,39 +54,16 @@ export default function AboutFounder() {
               variants={fadeUp}
               className="pbm-body-inverse mt-12 max-w-[58ch] space-y-6"
             >
-              <p>
-                A graduate of NID Ahmedabad and a child of Bengaluru's English
-                theatre circuit, Prasad Bidapa came into fashion sideways —
-                designing costume, then directing runway, then casting the
-                faces who would walk it. The instinct for the editorial image
-                was there from the first show.
-              </p>
-              <p>
-                Mentored by Martand Singh and Pupul Jayakar — the architects
-                of India's craft revival — he carried their conviction that
-                the country's master artisans were national treasures. That
-                belief threaded itself into every property he has built since,
-                from Rajasthan Heritage Week to the LUXO Luxury platform.
-              </p>
-              <p>
-                Across four decades he has discovered Deepika Padukone,
-                Anushka Sharma, Lara Dutta, John Abraham, Arjun Rampal,
-                Jacqueline Fernandez and Dino Morea — and produced more than
-                two hundred runway shows for designers and brands across the
-                subcontinent. India Today put him on its 1998 cover; the
-                industry has been listening ever since.
-              </p>
-              <p>
-                He still books every model on the roster personally, and still
-                writes to the artisans he met in the Eighties.
-              </p>
+              {founder.bio.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
             </motion.div>
 
             <motion.blockquote
               variants={fadeUp}
               className="pbm-quote mt-14 max-w-[44ch] border-l border-gold pl-6"
             >
-              "India's master artisans are our national treasures."
+              {founder.quote}
             </motion.blockquote>
           </motion.div>
 
